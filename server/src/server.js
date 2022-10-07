@@ -3,13 +3,14 @@ import fastifyPostgres from '@fastify/postgres'
 import fastifySecureSession from '@fastify/secure-session'
 import fastifyStatic from '@fastify/static'
 import dotenv from 'dotenv'
+import path from 'path'
 import { fastify as fastifyInstantiate } from 'fastify'
 import fastifyPlugin from 'fastify-plugin'
 import fs from 'fs'
-import path from 'path'
 import { migrate } from 'postgres-migrations'
 import graphql from './gql/graphql.js'
 import repository from './repository.js'
+dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
 export default async function build(options = {}) {
 	const fastify = fastifyInstantiate(options)
@@ -62,7 +63,7 @@ export default async function build(options = {}) {
 			})
 			fastify.decorate(
 				'repository',
-				repository
+				repository(fastify)
 			)
 		})
 	)

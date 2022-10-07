@@ -1,4 +1,5 @@
 CREATE TABLE song (
+	id SERIAL PRIMARY KEY,
 	title TEXT NOT NULL,
 	artist TEXT NOT NULL,
 	album TEXT NOT NULL,
@@ -6,7 +7,8 @@ CREATE TABLE song (
 );
 
 CREATE TABLE users (
-	username TEXT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
 	password TEXT NOT NULL
 );
 

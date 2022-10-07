@@ -12,7 +12,7 @@ export default async (fastify, options) => {
 		}),
 		loaders: loaders,
 		context: (request, reply) => ({
-			repo: fastify.repo,
+			repository: fastify.repository,
 			user: request.user,
 		}),
 		errorFormatter: (error, ...args) => {

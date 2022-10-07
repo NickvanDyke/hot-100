@@ -1,10 +1,15 @@
+import { createMercuriusTestClient } from 'mercurius-integration-testing';
+import build from '../src/server.js';
+import 'chai/register-assert.js'
+import 'chai/register-expect.js'
+import 'chai/register-should.js'
+
 before(async function () {
 	this.fastify = await build({
-		pgConnectionString: 'postgres://postgres@localhost/billboard',
+		pgConnectionString: 'postgres://nvandyke@localhost/billboard',
 		forceMigration: true,
 		logger: {
 			level: 'error',
-			prettyPrint: true,
 		},
 	})
 

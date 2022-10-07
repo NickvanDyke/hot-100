@@ -4,8 +4,8 @@ type Query {
 }
 
 type Mutation {
-	signup(username: String!, password: String!): String!
-	login(username: String!, password: String!): String!
+	signup(name: String!, password: String!): User!
+	login(name: String!, password: String!): User!
 
 	favorite(songId: Int!, isFavorite: Boolean!): Song!
 }
@@ -17,4 +17,9 @@ type Song {
 	genre: String!
 	ranking: Int!
 	isFavorite: Boolean!
+}
+
+type User {
+	id: Int!
+	name: String!
 }

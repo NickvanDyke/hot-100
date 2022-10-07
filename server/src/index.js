@@ -1,8 +1,5 @@
 import { exit } from 'process'
 import build from './server.js'
-import dotenv from 'dotenv'
-import path from 'path'
-dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
 const fastify = await build({
 	pgConnectionString: process.env.POSTGRES_URL,
