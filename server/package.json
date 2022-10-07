@@ -9,7 +9,7 @@
     "pg:start": "pg_ctl -D data start",
     "pg:createdb": "createdb -h 127.0.0.1 billboard",
     "pg:stop": "pg_ctl -D data stop",
-    "test": "mocha --recursive"
+    "test": "mocha --inspect --recursive"
   },
   "dependencies": {
     "@fastify/compress": "^6.1.1",
