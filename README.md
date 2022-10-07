@@ -8,5 +8,6 @@
 - Elegant error responses from API
 - More stringent password requirements
 
-# Nice to haves
+# Neat nice to haves
 - Store favorites locally if user is not logged in, so they can favorite without an account; then sync with server when they log in
+- View number of favorites each song has

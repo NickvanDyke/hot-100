@@ -1,0 +1,3 @@
+SELECT song_id
+FROM favorite
+WHERE user_id = $1;

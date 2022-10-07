@@ -2,8 +2,14 @@ CREATE TABLE song (
 	id SERIAL PRIMARY KEY,
 	title TEXT NOT NULL,
 	artist TEXT NOT NULL,
-	album TEXT NOT NULL,
-	ranking INTEGER
+	cover TEXT NOT NULL,
+	rank INTEGER
+);
+
+CREATE TABLE tag (
+	id SERIAL PRIMARY KEY,
+	song_id INTEGER REFERENCES song(id) ON DELETE CASCADE,
+	name TEXT NOT NULL
 );
 
 CREATE TABLE users (
@@ -13,7 +19,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE favorite (
-	user_id INTEGER NOT NULL REFERENCES users(id),
-	song_id INTEGER NOT NULL REFERENCES song(id),
+	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	song_id INTEGER NOT NULL REFERENCES song(id) ON DELETE CASCADE,
 	PRIMARY KEY (user_id, song_id)
 );
