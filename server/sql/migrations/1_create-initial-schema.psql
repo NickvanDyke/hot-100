@@ -1,0 +1,17 @@
+CREATE TABLE song (
+	title TEXT NOT NULL,
+	artist TEXT NOT NULL,
+	album TEXT NOT NULL,
+	ranking INTEGER
+);
+
+CREATE TABLE users (
+	username TEXT PRIMARY KEY,
+	password TEXT NOT NULL
+);
+
+CREATE TABLE favorite (
+	user_id INTEGER NOT NULL REFERENCES users(id),
+	song_id INTEGER NOT NULL REFERENCES song(id),
+	PRIMARY KEY (user_id, song_id)
+);

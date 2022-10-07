@@ -1,0 +1,20 @@
+type Query {
+	top100: [Song!]!
+	myFavorites: [Song!]!
+}
+
+type Mutation {
+	signup(username: String!, password: String!): String!
+	login(username: String!, password: String!): String!
+
+	favorite(songId: Int!, isFavorite: Boolean!): Song!
+}
+
+type Song {
+	title: String!
+	artist: String!
+	cover: String!
+	genre: String!
+	ranking: Int!
+	isFavorite: Boolean!
+}
