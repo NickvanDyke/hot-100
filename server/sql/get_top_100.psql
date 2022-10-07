@@ -1,0 +1,4 @@
+SELECT song_id
+FROM rank
+WHERE year = $1
+AND week = $2;

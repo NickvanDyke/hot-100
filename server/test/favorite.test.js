@@ -1,9 +1,9 @@
 import { auth, gql } from './util.js'
 
-describe('favorites', async function () {
+describe('favorite', async function () {
 	beforeEach(async function () {
 		this.user = await this.fastify.repository.createUser('test', 'testtest')
-		this.song = await this.fastify.repository.createSong('artist', 'title', 'cover', 1)
+		this.song = await this.fastify.repository.createSong('artist', 'title', 'cover')
 	})
 
 	describe('when logged in', async function () {
@@ -13,13 +13,13 @@ describe('favorites', async function () {
 
 		it('favorites a song', async function () {
 			const res = await this.gql.mutate(gql`
-			mutation {
-				favorite(songId: ${this.song.id}, isFavorite: true) {
-					id
-					isFavorite
+				mutation {
+					favorite(songId: ${this.song.id}, isFavorite: true) {
+						id
+						isFavorite
+					}
 				}
-			}
-		`)
+			`)
 
 			assert.deepEqual(res, {
 				data: {
@@ -36,13 +36,13 @@ describe('favorites', async function () {
 		it('unfavorites a song', async function () {
 			await this.fastify.repository.favoriteSong(this.user.id, this.song.id, true)
 			const res = await this.gql.mutate(gql`
-			mutation {
-				favorite(songId: ${this.song.id}, isFavorite: false) {
-					id
-					isFavorite
+				mutation {
+					favorite(songId: ${this.song.id}, isFavorite: false) {
+						id
+						isFavorite
+					}
 				}
-			}
-		`)
+			`)
 
 			assert.deepEqual(res, {
 				data: {

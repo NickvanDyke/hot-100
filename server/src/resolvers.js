@@ -3,11 +3,15 @@ const { ErrorWithProps } = mercurius
 
 export default {
 	Query: {
-		me: async (root, args, { user }) => {
-			if (!user) throw new ErrorWithProps('Not logged in', {}, 401)
+		user: async (root, { id }, { user }) => {
+			if (!id && !user) throw new ErrorWithProps('Not logged in', {}, 401)
 			return {
-				id: user.id,
+				id: id ?? user.id,
 			}
+		},
+		top100: async (root, { year, day }, { repository }) => {
+			const songIds = await repository.getTop100SongIds(year, day)
+			return songIds.map((id) => ({ id }))
 		},
 	},
 	Mutation: {

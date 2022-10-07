@@ -1,0 +1,1 @@
+INSERT INTO rank(song_id, year, week, rank) VALUES($1, $2, $3, $4);

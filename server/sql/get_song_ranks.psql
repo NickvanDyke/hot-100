@@ -1,4 +1,6 @@
-SELECT title
-FROM songs
-WHERE id = ANY($1)
+SELECT rank
+FROM rank
+WHERE song_id = ANY($1)
+AND year = $2
+AND week = $3
 ORDER BY array_position($1, id);

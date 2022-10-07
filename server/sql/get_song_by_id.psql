@@ -1,0 +1,3 @@
+SELECT *
+FROM song
+WHERE id = $1;

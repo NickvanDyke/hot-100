@@ -1,6 +1,6 @@
 type Query {
-	top100: [Song!]!
-	me: User!
+	top100(year: Int!, day: Int!): [Song!]!
+	user(id: Int!): User!
 }
 
 type Mutation {
@@ -15,7 +15,7 @@ type Song {
 	title: String!
 	artist: String!
 	cover: String!
-	genre: String!
+	tag: String!
 	rank: Int!
 	isFavorite: Boolean!
 }
