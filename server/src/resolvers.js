@@ -9,8 +9,8 @@ export default {
 				id: id ?? user.id,
 			}
 		},
-		top100: async (root, { year, day }, { repository }) => {
-			const songIds = await repository.getTop100SongIds(year, day)
+		top100: async (root, args, { repository }) => {
+			const songIds = await repository.getTop100SongIds()
 			return songIds.map((id) => ({ id }))
 		},
 	},

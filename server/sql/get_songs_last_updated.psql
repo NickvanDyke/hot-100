@@ -1,0 +1,2 @@
+SELECT MAX(last_updated)
+FROM song;

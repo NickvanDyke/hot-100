@@ -3,7 +3,7 @@ import { auth, gql } from './util.js'
 describe('favorite', async function () {
 	beforeEach(async function () {
 		this.user = await this.fastify.repository.createUser('test', 'testtest')
-		this.song = await this.fastify.repository.createSong('artist', 'title', 'cover')
+		this.song = await this.fastify.db.q('insert_song', ["title", "artist", "cover", 1, new Date()]).then((rows) => rows[0])
 	})
 
 	describe('when logged in', async function () {

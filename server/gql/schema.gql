@@ -1,6 +1,6 @@
 type Query {
-	top100(year: Int!, day: Int!): [Song!]!
-	user(id: Int!): User!
+	top100: [Song!]!
+	user(id: Int): User!
 }
 
 type Mutation {

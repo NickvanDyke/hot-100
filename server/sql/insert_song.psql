@@ -1,1 +1,6 @@
-INSERT INTO song(title, artist, cover) VALUES ($1, $2, $3) RETURNING id;
+INSERT INTO song(title, artist, cover, rank, last_updated)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT ON CONSTRAINT song_title_artist_key
+DO
+	UPDATE SET rank = $4, last_updated = $5
+RETURNING id;
