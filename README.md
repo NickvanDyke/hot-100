@@ -3,8 +3,8 @@
 ## The stack
 Backend:
 - NodeJS
-	- Using JavaScript for the PoC at least; easy to be fast and loose when prototyping, but on a long-term project with multiple developers, TypeScript pays dividends quickly
-	- Using JavaScript/TypeScript on both the front and back end makes it easy for developers to work on both sides of the application, requiring familiarity with only one language.
+	- JavaScript for the PoC at least; easy to be fast and loose when prototyping, but on a long-term project with multiple developers, TypeScript pays dividends quickly
+	- JavaScript/TypeScript on both the front and back end makes it easy for developers to work on both sides of the application, requiring familiarity with only one language
 - Fastify
 	- Performant
 	- Ergonomic plugin API, especially compared to Express's middleware
@@ -19,12 +19,11 @@ Frontend:
 	- Amazing docs
 	- When your data is well-structured, it can often serve as the data store for your entire app. i.e. no need to also introduce something like Redux
 
-Additional why's:
-- Many of these are very popular
-	- Easier to find developers with experience
-	- Stack-specific learning is more likely to be transferrable to other projects
-	- More resources available online
-	- Repeatedly battle-tested in the real world
+Many of these are also chosen due to their popularity, meaning:
+- Easier to find developers with experience
+- Stack-specific learning is more likely to be transferrable to other projects
+- More resources available online
+- Repeatedly battle-tested in the real world
 	
 ## Database model
 See the [schema](./server/sql/migrations/1_create-initial-schema.sql).
@@ -37,15 +36,19 @@ Where it gets interesting though, is actually obtaining the Billboard Top 100 so
 ## Front-end architecture
 
 ## Testing strategy
-The system is tested primarily on behavior. That is, tests interact with the system as a consumer would, and assert that the 'black box' behaves as expected. For example, when the client uses the API to favorite a song and then requests the user's favorites, it'd expect that song to be there. These tests are still split at the front/backend boundary, to keep complexity and flakiness down.
 
-Tests make heavy use of the Robot pattern, which abstracts the details of how a user interacts with our system, making tests maintainable and easy to write and read. For example, our backend robot may have functions for `login`, `favoriteSong`, and `getFavorites`, which it would call in that order, as an actual frontend would, to finally assert on the returned favorites and verify that favoriting is working. Even more conducive to frontend testing, our robot would simulate user actions and checks, like `clickFavoriteButton`, and `checkSongIsFavorited`.
+### Integration
+Here, the system is tested primarily on behavior. That is, tests interact with the system as a consumer would, and assert that the 'black box' behaves as expected. For example, when the client uses the API to favorite a song and then requests the user's favorites, it'd expect that song to be there. These tests are still split at the front/backend boundary, to keep complexity and flakiness down.
+
+These tests make heavy use of the Robot pattern, which abstracts the details of how a user interacts with our system, making tests maintainable and easy to write and read. For example, our backend robot may have functions for `login`, `favoriteSong`, and `getFavorites`, which it would call in that order, as an actual frontend would, to finally assert on the returned favorites and verify that favoriting is working. Even more conducive to frontend testing, our robot would simulate user actions and checks, like `clickFavoriteButton`, and `checkSongIsFavorited`.
+
+Tests are also named according to 'Given When Then', to obviously separate arrangement, action, and assertion.
 
 Advantages:
 - Resilient to implementation changes; you can modify the implementation without having to update a multitude of tests
 - Tests serve as documentation of how the system should behave and how the user interacts with it
 - Forces you to think about and cover edge cases
-- Easy to map user stories to test cases and write them first, since test code usually doesn't depend on code that doesn't exist yet. e.g. not a problem to hit an endpoint that doesn't exist yet
+- Easy to map user stories to test cases and write them first, since test code usually doesn't depend on code that doesn't exist yet
 - Minimizes time spent mocking, stubbing, spying etc and most closely mimicks the real world
 - Bang for your buck - you can get good coverage with a relatively small number of tests
 
@@ -53,7 +56,8 @@ Disadvantages:
 - Sometimes we *do* want to verify internal behavior, such as checking that the server returns cached data when available instead of hitting the API every time. Since the client has no knowledge of this, it can't check for that in these tests.
 - Increased test overlap and reduced granularity; you may have to do more hunting when a test fails to figure out exactly where/why. If your test requires authentication and that implementation has errors, the test could fail even though it mainly asserts retrieving a user's favorites.
 
-Fortunately, unit testing can fill in these gaps.
+### Unit
+Fortunately, unit testing fills in the gaps left above. We can test the internal behavior of the repository and it's caching, as well as simple things like our logic that determines whether we need to re-fetch the top 100.
 
 Some test cases are stubs for the sake of brevity.
 

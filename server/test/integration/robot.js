@@ -51,7 +51,22 @@ export class Robot {
 		this.gql.setCookies({ session: res.cookies[0].value })
 	}
 
-	async getTop100() {}
+	async getTop100() {
+		const res = await this.gql.mutate(gql`
+			query {
+				top100 {
+					id
+					title
+					artist
+					cover
+					rank
+					isFavorite
+				}
+			}
+		`)
+		
+		return res.data.top100
+	}
 
 	async favorite(songId, isFavorite) {
 		const res = await this.gql.mutate(gql`
@@ -84,6 +99,7 @@ export class Robot {
 						artist
 						cover
 						rank
+						isFavorite
 					}
 				}
 			}

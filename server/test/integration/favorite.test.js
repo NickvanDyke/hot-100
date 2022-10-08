@@ -18,7 +18,8 @@ describe('favorite', async function () {
 				title: this.song.title,
 				artist: this.song.artist,
 				cover: this.song.cover,
-				rank: this.song.rank
+				rank: this.song.rank,
+				isFavorite: true
 			}])
 		})
 

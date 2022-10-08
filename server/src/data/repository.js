@@ -19,22 +19,18 @@ export default (db, billboard) => ({
 			const chart = await billboard.getTop100()
 			const now = new Date()
 			await db.q('reset_song_ranks')
-			const top100Ids = await Promise.all(
+			await Promise.all(
 				chart.songs.map(
-					async ({ title, artist, cover, rank }) =>
-						await db.q('insert_song', [title, artist, cover, rank, now]).then((rows) => rows[0].id)
+					async ({ title, artist, cover, rank }) => await db.q('insert_song', [title, artist, cover, rank, now])
 				)
 			)
-			return top100Ids
-		} else {
-			return await db.q('get_top_100').then((rows) => rows.map((row) => row.song_id))
 		}
+		return await db.q('get_top_100').then((rows) => rows.map((row) => row.id))
 	},
 	getFavoriteSongs: async (userId) => db.q('get_favorite_songs', [userId]),
 
 	getSongTitles: (songIds) => db.q('get_song_titles', [songIds]).then((rows) => rows.map((row) => row.title)),
-	getSongArtists: (songIds) =>
-		db.q('get_song_artists', [songIds]).then((rows) => rows.map((row) => row.artist)),
+	getSongArtists: (songIds) => db.q('get_song_artists', [songIds]).then((rows) => rows.map((row) => row.artist)),
 	getSongCovers: (songIds) => db.q('get_song_covers', [songIds]).then((rows) => rows.map((row) => row.cover)),
 	getSongRanks: (songIds) => db.q('get_song_ranks', [songIds]).then((rows) => rows.map((row) => row.rank)),
 	getSongTags: async (songIds) => {
