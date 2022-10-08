@@ -1,6 +1,6 @@
 describe('favorite', async function () {
 	beforeEach(async function () {
-		this.song = await this.fastify.db
+		this.song = await this.db
 			.q('insert_song', ['title', 'artist', 'cover', 1, new Date()])
 			.then((rows) => rows[0])
 	})

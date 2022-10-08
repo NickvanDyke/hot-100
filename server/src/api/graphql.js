@@ -18,7 +18,7 @@ export default async (fastify, options) => {
 		}),
 		loaders: loaders,
 		context: (req, res) => ({
-			repository: fastify.repository,
+			repository: options.repository,
 			user: req.user,
 		}),
 		errorFormatter: (error, ...args) => {

@@ -3,12 +3,14 @@ import fastifyPostgres from '@fastify/postgres'
 import fastifySecureSession from '@fastify/secure-session'
 import fastifyStatic from '@fastify/static'
 import dotenv from 'dotenv'
-import path from 'path'
 import { fastify as fastifyInstantiate } from 'fastify'
 import fastifyPlugin from 'fastify-plugin'
 import fs from 'fs'
+import path from 'path'
 import { migrate } from 'postgres-migrations'
 import graphql from './api/graphql.js'
+import billboard from './data/billboard.js'
+import db from './data/db.js'
 import repository from './data/repository.js'
 dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
@@ -53,23 +55,8 @@ export default async function build(options = {}) {
 		await client?.end()
 	}
 
-	await fastify.register(
-		fastifyPlugin(async (fastify) => {
-			fastify.decorate('db', {
-				q: (path, args) =>
-					fastify.pg
-						.query(fs.readFileSync('./sql/' + path + '.psql').toString(), args)
-						.then((res) => res.rows),
-			})
-			fastify.decorate(
-				'repository',
-				repository(fastify)
-			)
-		})
-	)
-
 	fastify.register(fastifyPlugin(graphql), {
-		pgConnectionString: options.pgConnectionString,
+		repository: repository(db(fastify.pg), billboard),
 	})
 
 	fastify.get('/healthz', async (request, reply) => {
