@@ -8,8 +8,8 @@ import { fastify as fastifyInstantiate } from 'fastify'
 import fastifyPlugin from 'fastify-plugin'
 import fs from 'fs'
 import { migrate } from 'postgres-migrations'
-import graphql from './gql/graphql.js'
-import repository from './repository.js'
+import graphql from './api/graphql.js'
+import repository from './data/repository.js'
 dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
 export default async function build(options = {}) {

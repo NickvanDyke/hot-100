@@ -1,8 +1,8 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import fs from 'fs'
 import mercurius from 'mercurius'
-import loaders from '../loaders.js'
-import resolvers from '../resolvers.js'
+import loaders from './loaders.js'
+import resolvers from './resolvers.js'
 
 export default async (fastify, options) => {
 	await fastify.addHook('preValidation', async (req, res) => {

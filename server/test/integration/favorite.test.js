@@ -1,16 +1,16 @@
-describe.only('favorite', async function () {
+describe('favorite', async function () {
 	beforeEach(async function () {
 		this.song = await this.fastify.db
 			.q('insert_song', ['title', 'artist', 'cover', 1, new Date()])
 			.then((rows) => rows[0])
 	})
 
-	describe('when logged in', async function () {
+	describe('given the user is logged in', async function () {
 		beforeEach(async function () {
 			await this.robot.signup()
 		})
 
-		it('favorites a song', async function () {
+		it('when they favorite a song and retrieve their favorites, then it includes the favorited song', async function () {
 			await this.robot.favorite(this.song.id, true)
 			const favorites = await this.robot.getFavorites()
 
@@ -22,7 +22,7 @@ describe.only('favorite', async function () {
 			}])
 		})
 
-		it('unfavorites a favorited song', async function () {
+		it('given one favorited song, when the user unfavorites it and retrieves their favorites, then the favorites are empty', async function () {
 			await this.robot.favorite(this.song.id, true)
 
 			await this.robot.favorite(this.song.id, false)
@@ -32,7 +32,7 @@ describe.only('favorite', async function () {
 		})
 	})
 
-	it('errors when not logged in', async function () {
+	it('given the user is not logged in, when they favorite a song, then it errors', async function () {
 		try {
 			await this.robot.favorite(this.song.id, true)
 			assert.fail()

@@ -1,4 +1,4 @@
-import { gql } from './util.js'
+import { gql } from '../util.js'
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
 
 export class Robot {
