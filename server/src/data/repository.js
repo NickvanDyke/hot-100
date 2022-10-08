@@ -1,5 +1,5 @@
 import { getTop100 } from './billboard.js'
-import { hasBillboardUpdatedSince } from './util/hasBillboardUpdatedSince.js'
+import { hasBillboardUpdatedSince } from '../util/hasBillboardUpdatedSince.js'
 
 export default (fastify) => ({
 	createUser: async (name, password) => fastify.db.q('insert_user', [name, password]).then((rows) => rows[0]),
