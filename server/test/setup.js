@@ -1,8 +1,7 @@
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
 import build from '../src/server.js';
 import 'chai/register-assert.js'
-import 'chai/register-expect.js'
-import 'chai/register-should.js'
+import { Robot } from './robot.js';
 
 before(async function () {
 	this.fastify = await build({
@@ -14,6 +13,7 @@ before(async function () {
 	})
 
 	this.gql = createMercuriusTestClient(this.fastify)
+	this.robot = new Robot(this.fastify)
 })
 
 beforeEach(async function () {

@@ -1,72 +1,43 @@
-import { auth, gql } from './util.js'
-
-describe('favorite', async function () {
+describe.only('favorite', async function () {
 	beforeEach(async function () {
-		this.user = await this.fastify.repository.createUser('test', 'testtest')
-		this.song = await this.fastify.db.q('insert_song', ["title", "artist", "cover", 1, new Date()]).then((rows) => rows[0])
+		this.song = await this.fastify.db
+			.q('insert_song', ['title', 'artist', 'cover', 1, new Date()])
+			.then((rows) => rows[0])
 	})
 
 	describe('when logged in', async function () {
 		beforeEach(async function () {
-			await auth(this.fastify, this.gql, 'test', 'testtest')
+			await this.robot.signup()
 		})
 
 		it('favorites a song', async function () {
-			const res = await this.gql.mutate(gql`
-				mutation {
-					favorite(songId: ${this.song.id}, isFavorite: true) {
-						id
-						isFavorite
-					}
-				}
-			`)
+			await this.robot.favorite(this.song.id, true)
+			const favorites = await this.robot.getFavorites()
 
-			assert.deepEqual(res, {
-				data: {
-					favorite: {
-						id: this.song.id,
-						isFavorite: true,
-					},
-				},
-			})
-			const favorites = await this.fastify.repository.getFavoriteSongIds(this.user.id)
-			assert.deepEqual(favorites, [this.song.id])
+			assert.deepEqual(favorites, [{
+				title: this.song.title,
+				artist: this.song.artist,
+				cover: this.song.cover,
+				rank: this.song.rank
+			}])
 		})
 
-		it('unfavorites a song', async function () {
-			await this.fastify.repository.favoriteSong(this.user.id, this.song.id, true)
-			const res = await this.gql.mutate(gql`
-				mutation {
-					favorite(songId: ${this.song.id}, isFavorite: false) {
-						id
-						isFavorite
-					}
-				}
-			`)
+		it('unfavorites a favorited song', async function () {
+			await this.robot.favorite(this.song.id, true)
 
-			assert.deepEqual(res, {
-				data: {
-					favorite: {
-						id: this.song.id,
-						isFavorite: false,
-					},
-				},
-			})
-			const favorites = await this.fastify.repository.getFavoriteSongIds(this.user.id)
+			await this.robot.favorite(this.song.id, false)
+			const favorites = await this.robot.getFavorites()
+
 			assert.deepEqual(favorites, [])
 		})
 	})
 
 	it('errors when not logged in', async function () {
-		const res = await this.gql.mutate(gql`
-			mutation {
-				favorite(songId: ${this.song.id}, isFavorite: true) {
-					id
-					isFavorite
-				}
-			}
-		`)
-
-		assert.equal(res.errors[0].message, 'Not logged in')
+		try {
+			await this.robot.favorite(this.song.id, true)
+			assert.fail()
+		} catch (e) {
+			assert(e.message == 'Not logged in')
+		}
 	})
 })

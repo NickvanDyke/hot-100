@@ -6,7 +6,7 @@ export default {
 		user: async (root, { id }, { user }) => {
 			if (!id && !user) throw new ErrorWithProps('Not logged in', {}, 401)
 			return {
-				id: id ?? user.id,
+				id: id || user.id,
 			}
 		},
 		top100: async (root, args, { repository }) => {
@@ -33,7 +33,7 @@ export default {
 		},
 		favorite: async (root, { songId, isFavorite }, { user, repository }) => {
 			if (!user) throw new ErrorWithProps('Not logged in', {}, 401)
-			repository.favoriteSong(user.id, songId, isFavorite)
+			await repository.favoriteSong(user.id, songId, isFavorite)
 			return { id: songId }
 		},
 	},
@@ -42,6 +42,6 @@ export default {
 			const user = await repository.getUserById(id)
 			return user.name
 		},
-		favorites: async ({ id }, args, { repository }) => repository.getFavoriteSongIds(id),
+		favorites: async ({ id }, args, { repository }) => repository.getFavoriteSongs(id),
 	},
 }

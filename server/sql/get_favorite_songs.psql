@@ -1,3 +1,3 @@
-SELECT song_id
+SELECT song_id AS id
 FROM favorite
 WHERE user_id = $1;

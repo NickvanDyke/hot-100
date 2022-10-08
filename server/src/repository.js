@@ -8,9 +8,9 @@ export default (fastify) => ({
 
 	favoriteSong: (userId, songId, isFavorite) => {
 		if (isFavorite) {
-			fastify.db.q('insert_favorite', [userId, songId])
+			return fastify.db.q('insert_favorite', [userId, songId])
 		} else {
-			fastify.db.q('delete_favorite', [userId, songId])
+			return fastify.db.q('delete_favorite', [userId, songId])
 		}
 	},
 
@@ -31,8 +31,7 @@ export default (fastify) => ({
 			return await fastify.db.q('get_top_100').then((rows) => rows.map((row) => row.song_id))
 		}
 	},
-	getFavoriteSongIds: async (userId) =>
-		fastify.db.q('get_favorite_song_ids', [userId]).then((rows) => rows.map((row) => row.song_id)),
+	getFavoriteSongs: async (userId) => fastify.db.q('get_favorite_songs', [userId]),
 
 	getSongTitles: (songIds) => fastify.db.q('get_song_titles', [songIds]).then((rows) => rows.map((row) => row.title)),
 	getSongArtists: (songIds) =>
