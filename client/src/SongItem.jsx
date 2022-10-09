@@ -1,6 +1,7 @@
 import Favorite from '@mui/icons-material/Favorite'
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
 import {
+	Divider,
 	IconButton,
 	ListItem,
 	ListItemAvatar,
@@ -36,7 +37,7 @@ export const SongItem = ({
 				onAuthed={() => favorite(true)}
 				isOpen={authing}
 			/>
-			<ListItem>
+			<ListItem divider={<Divider />}>
 				<ListItemAvatar>
 					<Stack
 						direction='row'
