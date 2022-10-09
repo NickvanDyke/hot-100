@@ -66,12 +66,12 @@ export const Auth = ({ isOpen, onClose }) => {
 			<DialogActions>
 				<Button
 					onClick={() => submit(true)}
-					disabled={name === '' || password.length < 8}>
+					disabled={name.length === 0 || name.length > 20 || password.length < 8}>
 					Sign up
 				</Button>
 				<Button
 					onClick={() => submit(false)}
-					disabled={name === '' || password.length < 8}>
+					disabled={name.length === 0 || name.length > 20 || password.length < 8}>
 					Login
 				</Button>
 			</DialogActions>

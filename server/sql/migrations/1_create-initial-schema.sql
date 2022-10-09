@@ -28,7 +28,7 @@ CREATE TABLE song (
 
 CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
-	name TEXT NOT NULL UNIQUE CHECK(LENGTH(name) > 0),
+	name TEXT NOT NULL UNIQUE CHECK(LENGTH(name) > 0 AND LENGTH(name) < 20),
 	password TEXT NOT NULL CHECK(LENGTH(password) > 7)
 );
 
