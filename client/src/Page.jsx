@@ -5,23 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Account } from './Account'
 import { FavoritesChart } from './FavoritesChart'
 import { useAuth } from './hooks/useAuth'
+import { useOnTop } from './hooks/useOnTop'
 import { Top100Chart } from './Top100Chart'
 
 export const Page = () => {
 	const auth = useAuth()
 	const [viewingFavorites, setViewingFavorites] = useState(false)
-	const [onTop, setOnTop] = useState(true)
-	const listRef = useRef()
+	const { onTop, ref } = useOnTop()
 
-	useEffect(() => {
-		if (!listRef) return
-		const cb = () => setOnTop(listRef.current.scrollTop === 0)
-		listRef.current.addEventListener('scroll', cb)
-		return () => {
-			listRef.current?.removeEventListener('scroll', cb)
-		}
-	}, [setOnTop, listRef])
-	
 	useEffect(() => {
 		// kinda hacky but MVP
 		if (!auth.name) setViewingFavorites(false)
@@ -48,7 +39,7 @@ export const Page = () => {
 			<Box
 				height='100%'
 				overflow='scroll'
-				ref={listRef}>
+				ref={ref}>
 				{auth.name && (
 					<Chip
 						sx={{ ml: 3, mt: 1 }}
