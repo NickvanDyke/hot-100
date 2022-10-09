@@ -1,10 +1,10 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 
 export const apollo = new ApolloClient({
 	connectToDevTools: true,
 	link: createHttpLink({
 		uri: '/graphql',
-		credentials: 'same-origin'
+		credentials: 'same-origin',
 	}),
-	cache: new InMemoryCache()
+	cache: new InMemoryCache(),
 })

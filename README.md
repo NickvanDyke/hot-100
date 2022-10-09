@@ -24,6 +24,7 @@ Many of these are also chosen due to their popularity, meaning:
 - Stack-specific learning is more likely to be transferrable to other projects
 - More resources available online
 - Repeatedly battle-tested in the real world
+- Greater guarantee of long-term support
 	
 ## Database model
 See the [schema](./server/sql/migrations/1_create-initial-schema.sql).

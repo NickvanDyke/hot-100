@@ -1,12 +1,12 @@
-import { Button, IconButton, Stack, Typography } from '@mui/material'
+import Person from '@mui/icons-material/AccountCircle'
+import Logout from '@mui/icons-material/Logout'
+import { IconButton, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Auth } from './Auth'
 import { useAuth } from './hooks/useAuth'
-import Person from '@mui/icons-material/AccountCircle'
-import Logout from '@mui/icons-material/Logout'
 
 export const Account = () => {
-	const [authing, setAuthing] = useState()
+	const [authing, setAuthing] = useState(false)
 	const auth = useAuth()
 
 	return (
