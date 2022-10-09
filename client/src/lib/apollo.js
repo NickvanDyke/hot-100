@@ -7,4 +7,9 @@ export const apollo = new ApolloClient({
 		credentials: 'same-origin',
 	}),
 	cache: new InMemoryCache(),
+	defaultOptions: {
+		watchQuery: {
+			fetchPolicy: 'cache-and-network',
+		},
+	},
 })

@@ -11,8 +11,6 @@ export const Account = () => {
 
 	return (
 		<Stack
-			p={3}
-			pl={0}
 			gap={0}
 			spacing={0}
 			justifyContent='center'

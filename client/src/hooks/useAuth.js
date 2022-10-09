@@ -18,6 +18,7 @@ export const useAuth = () => {
 					name,
 					password,
 				},
+				refetchQueries: ['Top100, Favorites'],
 				onCompleted: (data) => {
 					setCookie('name', data.signup.name, { path: '/', expires: false })
 					cb(data)
@@ -31,6 +32,7 @@ export const useAuth = () => {
 					name,
 					password,
 				},
+				refetchQueries: ['Top100, Favorites'],
 				onCompleted: (data) => {
 					console.log(data)
 					setCookie('name', data.login.name, { path: '/', expires: false })
@@ -41,6 +43,7 @@ export const useAuth = () => {
 		},
 		logout: () => {
 			logout({
+				refetchQueries: ['Top100, Favorites'],
 				onCompleted: () => {
 					removeCookie('name')
 				},

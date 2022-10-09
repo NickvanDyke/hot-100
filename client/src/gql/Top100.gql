@@ -1,6 +1,6 @@
 #import './fragments/SongFields.gql'
 
-query GetTop100 {
+query Top100 {
 	top100 {
 		...SongFields
 	}

@@ -1,9 +1,15 @@
-import { Box, Stack, Typography } from '@mui/material'
+import Favorite from '@mui/icons-material/Favorite'
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { Account } from './Account'
+import { FavoritesChart } from './FavoritesChart'
+import { useAuth } from './hooks/useAuth'
 import { Top100Chart } from './Top100Chart'
 
 export const Page = () => {
+	const auth = useAuth()
+	const [viewingFavorites, setViewingFavorites] = useState(false)
 	const [onTop, setOnTop] = useState(true)
 	const listRef = useRef()
 	useEffect(() => {
@@ -28,13 +34,25 @@ export const Page = () => {
 					py={2}>
 					Billboard Top 100
 				</Typography>
-				<Account />
+				<Stack p={2}>
+					<Account />
+				</Stack>
 			</Stack>
 			<Box
 				height='100%'
 				overflow='scroll'
 				ref={listRef}>
-				<Top100Chart />
+				{auth.name && (
+					<Chip
+						sx={{ ml: 3 }}
+						label='FAVORITES'
+						icon={viewingFavorites ? <Favorite /> : <FavoriteBorder />}
+						onClick={() => setViewingFavorites(!viewingFavorites)}
+						color={viewingFavorites ? 'primary' : 'default'}
+						variant={viewingFavorites ? 'filled' : 'outlined'}
+					/>
+				)}
+				{auth.name && viewingFavorites ? <FavoritesChart /> : <Top100Chart />}
 			</Box>
 		</Stack>
 	)
