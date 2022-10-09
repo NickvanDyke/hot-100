@@ -16,7 +16,7 @@ export const useFavorite = (songId) => {
 			optimisticResponse: {
 				__typename: 'Mutation',
 				favorite: {
-					__typewname: 'Song',
+					__typename: 'Song',
 					id: songId,
 					isFavorite,
 				},
