@@ -25,14 +25,18 @@ export default {
 		login: async (root, { name, password }, { repository, reply }) => {
 			const user = await repository.getUserByName(name)
 			if (!user || user.password !== password) {
-				throw new ErrorWithProps('Invalid credentials', {}, 401)
+				throw new ErrorWithProps('Invalid credentials')
 			} else {
 				reply.request.session.set('id', user.id)
 				return { id: user.id }
 			}
 		},
+		logout: async (root, args, { reply }) => {
+			reply.request.session.delete()
+			return true
+		},
 		favorite: async (root, { songId, isFavorite }, { user, repository }) => {
-			if (!user) throw new ErrorWithProps('Not logged in', {}, 401)
+			if (!user) throw new ErrorWithProps('Not logged in')
 			await repository.favoriteSong(user.id, songId, isFavorite)
 			return { id: songId }
 		},

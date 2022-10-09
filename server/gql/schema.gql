@@ -6,6 +6,7 @@ type Query {
 type Mutation {
 	signup(name: String!, password: String!): User!
 	login(name: String!, password: String!): User!
+	logout: Boolean!
 
 	favorite(songId: Int!, isFavorite: Boolean!): Song!
 }

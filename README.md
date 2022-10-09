@@ -75,7 +75,8 @@ In this repository, you'll find the source for a proof of concept. I often find 
 Important points that are missing from the PoC, but would be relatively vital before production:
 - Salting + hashing passwords
 - Email signup + verification, password reset
-- Elegant error responses from API
+- More detailed error responses from API
+- More error handling in the frontend
 - Stringent password requirements
 
 ## Neat nice to haves
