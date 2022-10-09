@@ -12,6 +12,7 @@ export const Page = () => {
 	const [viewingFavorites, setViewingFavorites] = useState(false)
 	const [onTop, setOnTop] = useState(true)
 	const listRef = useRef()
+
 	useEffect(() => {
 		if (!listRef) return
 		const cb = () => setOnTop(listRef.current.scrollTop === 0)
@@ -20,6 +21,11 @@ export const Page = () => {
 			listRef.current?.removeEventListener('scroll', cb)
 		}
 	}, [setOnTop, listRef])
+	
+	useEffect(() => {
+		// kinda hacky but MVP
+		if (!auth.name) setViewingFavorites(false)
+	}, [auth.name])
 
 	return (
 		<Stack height='100%'>
@@ -53,7 +59,7 @@ export const Page = () => {
 						variant={viewingFavorites ? 'filled' : 'outlined'}
 					/>
 				)}
-				{auth.name && viewingFavorites ? <FavoritesChart /> : <Top100Chart />}
+				{viewingFavorites ? <FavoritesChart /> : <Top100Chart />}
 			</Box>
 		</Stack>
 	)
