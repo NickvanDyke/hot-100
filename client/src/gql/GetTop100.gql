@@ -1,0 +1,7 @@
+#import './fragments/SongFields.gql'
+
+query GetTop100 {
+	top100 {
+		...SongFields
+	}
+}

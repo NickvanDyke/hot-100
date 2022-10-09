@@ -57,15 +57,19 @@ Disadvantages:
 - Increased test overlap and reduced granularity; you may have to do more hunting when a test fails to figure out exactly where/why. If your test requires authentication and that implementation has errors, the test could fail even though it mainly asserts retrieving a user's favorites.
 
 ### Unit
-Fortunately, unit testing fills in the gaps left above. We can test the internal behavior of the repository and it's caching, as well as simple things like our logic that determines whether we need to re-fetch the top 100.
+Fortunately, unit testing fills in the gaps left above. We can test the internal behavior of the repository and it's caching, as well as simple things like our logic that determines whether we need to re-fetch the top 100. Regardless of the number of unit tests we actually write, architecting our code such that it's conducive to unit testing anyway has benefits of its own, like modularity and separation of concerns.
 
-Some test cases are stubs for the sake of brevity.
+The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above.
 
 ## Assumptions
 - The user wants to access their favorites across devices, i.e. a login is needed. As opposed to simply using e.g. cookies or LocalStorage.
 
 # Proof of concept
 In this repository, you'll find the source for a proof of concept. I often find that actually building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. I particularly find it facilitates an ergonomic API, as it forces you to stumble on and confront pain points in your model and how it's consumed.
+
+## Live
+
+## Running locally
 
 ## What's missing
 Important points that are missing from the PoC, but would be relatively vital before production:

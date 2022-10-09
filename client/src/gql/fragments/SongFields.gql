@@ -1,0 +1,8 @@
+fragment SongFields on Song {
+	id
+	title
+	artist
+	cover
+	rank
+	isFavorite
+}
