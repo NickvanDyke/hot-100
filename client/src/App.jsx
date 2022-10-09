@@ -1,14 +1,15 @@
 import { ApolloProvider } from '@apollo/client'
 import { Top100Chart } from './Top100Chart'
 import { apollo } from './lib/apollo.js'
-import { Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import { Account } from './Account'
 
 export const App = () => {
 	return (
 		<ApolloProvider client={apollo}>
-			<Stack>
+			<Stack height='100%'>
 				<Stack
+					boxShadow={4}
 					direction='row'
 					justifyContent='space-between'>
 					<Typography
@@ -19,7 +20,9 @@ export const App = () => {
 					</Typography>
 					<Account />
 				</Stack>
-				<Top100Chart />
+				<Box height='100%' overflow='scroll'>
+					<Top100Chart />
+				</Box>
 			</Stack>
 		</ApolloProvider>
 	)
