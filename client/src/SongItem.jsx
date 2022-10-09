@@ -27,7 +27,7 @@ export const SongItem = ({
 					<Typography
 						minWidth={'2.25em'}
 						textAlign='end'>
-						{rank ? `#${rank}` : ''}
+						{rank ? `#${rank}` : '-'}
 					</Typography>
 					<img
 						height='50px'

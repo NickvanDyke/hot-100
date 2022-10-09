@@ -27,6 +27,7 @@ export const Page = () => {
 				boxShadow={onTop ? 0 : 4}
 				sx={{ transition: 'box-shadow 0.3s' }}
 				direction='row'
+				alignItems='center'
 				justifyContent='space-between'>
 				<Typography
 					fontSize='min(10vw, 64px)'
