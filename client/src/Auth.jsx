@@ -11,7 +11,7 @@ import {
 import { useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 
-export const Auth = ({ isOpen, onClose }) => {
+export const Auth = ({ isOpen, onClose, onAuthed }) => {
 	const [name, setName] = useState('')
 	const [password, setPassword] = useState('')
 	const [err, setErr] = useState()
@@ -27,6 +27,7 @@ export const Auth = ({ isOpen, onClose }) => {
 	const submit = (isNew) => {
 		const cb = (data, err) => {
 			if (!err) {
+				onAuthed?.()
 				onClosed()
 			} else {
 				setErr(err)
@@ -43,11 +44,11 @@ export const Auth = ({ isOpen, onClose }) => {
 		<Dialog
 			open={isOpen}
 			onClose={onClosed}>
-			<DialogTitle>Sign up or Login</DialogTitle>
+			<DialogTitle>
+				Sign up or Login{onAuthed ? ' to favorite' : ''}
+			</DialogTitle>
 			<DialogContent>
-				<Stack
-					gap={2}
-					width='225px'>
+				<Stack gap={2}>
 					<TextField
 						placeholder='Name'
 						value={name}
@@ -66,12 +67,16 @@ export const Auth = ({ isOpen, onClose }) => {
 			<DialogActions>
 				<Button
 					onClick={() => submit(true)}
-					disabled={name.length === 0 || name.length > 20 || password.length < 8}>
+					disabled={
+						name.length === 0 || name.length > 20 || password.length < 8
+					}>
 					Sign up
 				</Button>
 				<Button
 					onClick={() => submit(false)}
-					disabled={name.length === 0 || name.length > 20 || password.length < 8}>
+					disabled={
+						name.length === 0 || name.length > 20 || password.length < 8
+					}>
 					Login
 				</Button>
 			</DialogActions>
