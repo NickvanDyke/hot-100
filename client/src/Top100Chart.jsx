@@ -1,11 +1,23 @@
 import { List } from '@mui/material'
 import { useTop100 } from './hooks/useTop100'
 import { SongItem } from './SongItem'
+import { SongItemSkeleton } from './SongItemSkeleton'
 
 export const Top100Chart = () => {
-	const { songs, loading } = useTop100()
+	const songs = useTop100()
 
-	if (loading) return null
+	if (!songs) {
+		return (
+			<List>
+				{Array.from({ length: 100 }, (_, i) => (
+					<SongItemSkeleton
+						key={i}
+						index={i}
+					/>
+				))}
+			</List>
+		)
+	}
 
 	return (
 		<List>
