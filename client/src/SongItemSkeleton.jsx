@@ -25,7 +25,6 @@ export const SongItemSkeleton = ({ index }) => {
 						#{index + 1}
 					</Typography>
 					<Skeleton
-						sx={{ ml: 2 }}
 						variant='rectangular'
 						width='50px'
 						height='50px'
