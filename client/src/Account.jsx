@@ -16,7 +16,7 @@ export const Account = () => {
 			gap={0}
 			spacing={0}
 			justifyContent='center'
-			alignItems='flex-end'>
+			alignItems='center'>
 			<IconButton
 				sx={{ p: 0 }}
 				onClick={() => {
@@ -30,7 +30,7 @@ export const Account = () => {
 					gap={1}
 					direction='row'>
 					<Typography
-						variant='h6'
+						color='text.secondary'
 						textAlign='start'>
 						{auth.name}
 					</Typography>
