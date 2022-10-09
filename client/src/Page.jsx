@@ -51,7 +51,7 @@ export const Page = () => {
 				ref={listRef}>
 				{auth.name && (
 					<Chip
-						sx={{ ml: 3 }}
+						sx={{ ml: 3, mt: 1 }}
 						label='FAVORITES'
 						icon={viewingFavorites ? <Favorite /> : <FavoriteBorder />}
 						onClick={() => setViewingFavorites(!viewingFavorites)}
