@@ -59,7 +59,7 @@ Disadvantages:
 ### Unit
 Fortunately, unit testing fills in the gaps left above. We can test the internal behavior of the repository and it's caching, as well as simple things like our logic that determines whether we need to re-fetch the top 100. Regardless of the number of unit tests we actually write, architecting our code such that it's conducive to unit testing anyway has benefits of its own, like modularity and separation of concerns.
 
-The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above.
+The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above. Frontend tests were foregone due to time, but normally would be implemented using
 
 ## Assumptions
 - The user wants to access their favorites across devices, i.e. a login is needed. As opposed to simply using e.g. cookies or LocalStorage.

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Auth } from './Auth'
 import { useAuth } from './hooks/useAuth'
 import Person from '@mui/icons-material/AccountCircle'
+import Logout from '@mui/icons-material/Logout'
 
 export const Account = () => {
 	const [authing, setAuthing] = useState()
@@ -10,28 +11,34 @@ export const Account = () => {
 
 	return (
 		<Stack
-			direction='row'
 			p={3}
+			pl={0}
+			gap={0}
+			spacing={0}
 			justifyContent='center'
-			alignItems='flex-start'>
+			alignItems='flex-end'>
 			<IconButton
+				sx={{ p: 0 }}
 				onClick={() => {
 					if (!auth.name) setAuthing(true)
 				}}>
 				<Person sx={{ width: '48px', height: '48px' }} />
 			</IconButton>
 			{auth.name && (
-				<Stack>
+				<Stack
+					alignItems='center'
+					gap={1}
+					direction='row'>
 					<Typography
 						variant='h6'
 						textAlign='start'>
 						{auth.name}
 					</Typography>
-					<Button
+					<IconButton
 						sx={{ p: 0 }}
 						onClick={() => auth.logout()}>
-						Logout
-					</Button>
+						<Logout />
+					</IconButton>
 				</Stack>
 			)}
 			<Auth
