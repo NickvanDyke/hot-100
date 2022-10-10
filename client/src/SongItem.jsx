@@ -7,6 +7,7 @@ import {
 	ListItemAvatar,
 	ListItemSecondaryAction,
 	ListItemText,
+	Skeleton,
 	Stack,
 	Typography,
 } from '@mui/material'
@@ -21,6 +22,7 @@ export const SongItem = ({
 	const favorite = useFavorite(id)
 	const [authing, setAuthing] = useState(false)
 	const auth = useAuth()
+	const [imgLoaded, setImgLoaded] = useState(false)
 
 	const onFavorite = () => {
 		if (!auth.name) {
@@ -49,10 +51,19 @@ export const SongItem = ({
 							textAlign='end'>
 							{rank ? `#${rank}` : '-'}
 						</Typography>
+						{!imgLoaded && (
+							<Skeleton
+								variant='rectangular'
+								width='50px'
+								height='50px'
+							/>
+						)}
 						<img
 							height='50px'
 							src={cover}
 							alt={title}
+							style={{ display: imgLoaded ? 'block' : 'none' }}
+							onLoad={() => setImgLoaded(true)}
 						/>
 					</Stack>
 				</ListItemAvatar>
