@@ -9,7 +9,7 @@ const fastify = await build({
 	},
 })
 
-fastify.listen({ port: process.env.PORT }, (err, address) => {
+fastify.listen(process.env.PORT, process.env.ADDRESS, function (err, address) {
 	if (err) {
 		fastify.log.error(err)
 		exit(1)

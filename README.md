@@ -1,7 +1,8 @@
 # Proof of concept
-In this repository, you'll find the source for a proof of concept. I often find that actually building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. I particularly find it facilitates an ergonomic API, as it forces you to stumble on and confront pain points in your model and how it's consumed.
+In this repository, you'll find the source for a proof of concept. I often find that actually building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. I particularly find it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture and its use.
 
 ## Live
+https://billboard.onrender.com
 
 ## Running locally
 In `client` directory:
@@ -10,10 +11,11 @@ In `client` directory:
 
 In `server` directory:
 
+(Requires local Postgres instance)
+
 `npm install && npm run pg:init && npm run pg:start && npm run pg:createdb && npm start`
 
-Available at `localhost:3001`.
-
+Available at `localhost:3001`. Alternatively, `npm start` in `client` to run the dev server on `localhost:3000`.
 
 ## What's missing
 A non-exhaustive list of important things missing from the PoC that would be relatively vital before production:
@@ -30,7 +32,7 @@ Cool or fun features often pop up while prototyping. But of course, we only have
 - View past weeks; db model would have to change to accommodate tracking rank per-song per-week, instead of a single rank per song that's updated every week
 - With enough historical data stored, show a graph of song(s) performance over time
 - Social login
-- [SSR](https://github.com/fastify/fastify-vite) for faster initial load and better SEO
+- [SSR](https://github.com/fastify/fastify-vite) for faster initial load and better SEO. Since the top 100 is only updated weekly, this would also make CDN caching especially effective.
 
 Thanks for taking the time to read and browse! I would love to hear any feedback you have.
 
@@ -44,16 +46,19 @@ Backend:
 - Fastify
 	- Performant
 	- Ergonomic plugin API, especially compared to Express's middleware
-- Mercurius GraphQL server 
-	- Performant
+- [Mercurius](https://mercurius.dev/#/)
+	- Performant with simple setup and configuration
 	- Flexible, easily allowing us to combine our multiple data sources into a single API for the client to consume
 - PostgresQL
+	- Many features
+	- Good SQL standard conformance
+	- FOSS, but still has great official documentation and a big community
 
 Frontend:
 - React
 - Apollo Client
 	- Amazing docs
-	- When your data is well-structured, it can often serve as the data store for your entire app. i.e. no need to also introduce something like Redux
+	- When your data is well-structured, it can often serve as the data store for your app. i.e. no need to also introduce something like Redux
 - MUI
 	- Easy to use and quickly create an aesthetically pleasing UI
 	- Follows well-established Material Design patterns
@@ -66,40 +71,63 @@ Many of these are also chosen due to their popularity, meaning:
 - Greater guarantee of long-term support
 	
 ## Database model
-See the [schema](/server/sql/migrations/1_create-initial-schema.sql). Data integrity is enforced at the database level where possible.
+See the [schema](/server/sql/migrations/1_create-initial-schema.sql). The app uses a relational model for data accuracy, a simple model, and future extensibility.
+- Users
+	- Unique on name, but uses a surrogate key to allow easy future changing of names, addition of emails, etc
+- Songs
+	- Uniquely identified by title + artist, with a surrogate key for simplicity
+	- Nullable `rank`, since we'll store songs even after they've fallen out of the top 100, to be displayed in favorites
+	- `rank` is a column instead of a separate table because we only track rank for the latest week. To store historic data, we'd separate it out to a table with the song's id and the rank it was on a particular week
+	- `last_updated` so we know when our data has become stale relative to when the Billboard chart updates
+	- Nullable `tag` because the billboard API doesn't provide genres/tags, so we have to later retrieve them from a different source, and can't guarantee availability for every song. Additionally, given the real-world APIs available to us, there's a good chance we'd get rate-limited or have to throttle our requests and we wouldn't want that to grind the entire app to a halt if we chained that API call before inserting the song at all.
+- User's favorite songs
+	- Many-to-many relationship
+	- Cascades on delete to prevent stale data (not that our app allows deletion of songs or users yet)
+
+Data integrity is enforced at the database level where possible.
 
 ## Method for accessing data
-The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where before you know it prototype becomes production, the extensibility of GraphQL can quickly make it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources (described below) into a single API.
+The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where before you know it prototype becomes production, the extensibility of GraphQL can quickly make it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources into a single API, as needed here.
 
-Where it gets interesting though, is actually obtaining the Billboard Top 100 songs. They don't expose an official API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an ergonomic API. This allows us to keep a lean, simple client, and easily swap out the top 100 data source if a more elegant or alternative source appears in the future. Additionally, since the top 100 only updates once a week, storing and serving it ourselves saves us from excessively hitting Billboard's "API". Lastly, we need to store all the songs that have ever been displayed to our users anyway, so that they can still view their favorites that have since fallen out of the top 100 and would no longer be in the API response. If we extended the project to allow viewing and storing of past weeks, we could also do some fun visualization with such data, like charting trends over time.
+As far as obtaining the data underlying our API - Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an ergonomic API.
+- Allows us to keep a lean, simple client
+- We can easily swap out the top 100 data source if a more elegant or alternative source appears in the future
+- Since the top 100 only updates once a week, storing and serving it ourselves saves us from excessively hitting Billboard's "API"
+- More conducive to SSR and caching
+- We need to store all the songs that have ever been displayed to our users anyway, so that they can still view their favorites that have since fallen out of the top 100 and would no longer be in the API response
+- If we extended the project to allow viewing and storing of past weeks, we could also do some fun visualization with such data, like charting trends over time
+
+However, we can't obtain genres from the above method, and instead must turn to [last.fm](https://www.last.fm/api/show/track.getTopTags). When a song's genre is requested in our GraphQL API, it'll check for and return the matching tag if it exists. If not, it'll make a request to last.fm, store the tag, and then return it. Not implemented in POC due to time. We'd be hitting last.fm infrequently, but when we do, it'd be 100 requests at once (doesn't seem to allow requesting multiple song's tags in one request). So in practice we may get rate-limited and have to throttle ourselves to slowly collect tags after refreshing the top 100. At least, for the first time top100 refresh - after that, the number of unseen songs in the top 100 each week is probably low enough to not be an issue.
 
 ## Front-end architecture
+- MVC, where...
+	- Model = Apollo Client
+	- View = React
+	- Ccontroller = Custom hooks form the bridge between React components and the Apollo Client. This allows us to easily swap out the data source, and keeps the components themselves simple and easy to read.
+- Files structured according to [Bulletproof React](https://github.com/alan2207/bulletproof-react)
+- Built with [Vite](https://vitejs.dev/), a ridiculously fast and easily configurable build tool, especially when compared to CRA and Webpack. Also allows more flexibility than NextJS.
+- Compressed and served by the Fastify server
 
 ## Testing strategy
-Tests follow Behavior Driven Development, where arrangements, actions, and assertions are made clear in the test names and given rise from user stories. They are named according to 'Given When Then', to obviously separate these three steps.
+Tests follow Behavior Driven Development, where arrangements, actions, and assertions are made clear in the test names and given rise from user stories. They are named according to 'Given When Then', to obviously define each of these three steps within a test case.
+- Easy to map user stories to test cases, write them first, and then iterate
+- Tests serve as readable documentation of how the system should behave
+- Naturally leads you to consider additional use- and edge-cases
 
 ### Integration
-Here, tests interact with the system as a consumer would, and assert that the 'black box' behaves as expected. For example, when the client uses the API to favorite a song and then requests the user's favorites, it'd expect that song to be there.
-
-These tests make heavy use of the Robot pattern, which abstracts the details of how a user interacts with our system, making tests maintainable and easy to write and read.
-
-TODO some of these should go in BDD section
-Advantages of the above approach:
+Here, tests use the Robot pattern to interface with the system as a user would, and assert that the 'black box' behaves as expected. When the client uses the API to favorite a song and then requests the user's favorites, it'd expect that song to be there. When they click the favorite button in the UI, they'd expect it to change to displaying the opposite state.
 - Resilient to implementation changes; you can modify the implementation without having to update a multitude of tests
-- Tests serve as documentation of how the system should behave and how the user interacts with it
-- Forces you to think about and cover edge cases
-- Easy to map user stories to test cases and write them first, since test code usually doesn't depend on code that doesn't exist yet
-- Minimizes time spent mocking, stubbing, spying etc and most closely mimicks the real world
-- Bang for your buck - you can get good coverage with a relatively small number of tests
+- The [robot](/server/test/integration/robot.js) serves as documentation for how the user interacts with the system
+- The robot abstracts away how we interact with the system, easily adapting to API surface changes and making tests easy to maintain, read, and write
+- Minimizes time spent faking, mocking, stubbing, spying etc. and most closely mimicks the real world
+- Bang for your buck - you can get good coverage and confidence with a relatively small number of tests
 
-Disadvantages:
-- Sometimes we *do* want to verify internal behavior, such as checking that the server returns cached data when available instead of hitting the API every time. Since the client has no knowledge of this, it can't check for that in these tests.
-- Increased test overlap and reduced granularity; you may have to do more hunting when a test fails to figure out exactly where/why. If your test requires authentication and that implementation has errors, the test could fail even though it mainly asserts retrieving a user's favorites.
+However, integration tests can fall short when we *do* want to verify internal behavior, or test narrow, specific scenarios.
 
 ### Unit
-Here we test components in isolation to explore more numerous varied and specific scenarios. The internal behavior of the repository and it's caching, as well as simple things like our logic that determines whether we need to re-fetch the top 100. Regardless of the number of unit tests we actually write, architecting our code such that it's conducive to unit testing anyway has benefits of its own, like modularity and separation of concerns.
+Here we test system components in isolation to explore specific or otherwise difficult to reproduce or verify scenarios. The [internal behavior of the repository](/server/test/unit.repository.test.js) or [determining whether we need to re-fetch the top 100](/server/test/unit/hasBillboardUpdatedSince.test.js). Additionally, architecting our code such that it's conducive to unit testing anyway has benefits of its own, like modularity and separation of concerns. For example, the [repository](/server/src/data/repository.js) receives a DB and billboard API, and is agnostic to their implementation. In tests, this allows us to easily swap out either dependency for a mock or fake to test the repository in isolation and induce conditions that we normally don't have control over, like a 500 response from the Billboard website. In production, it minimizes the ripple effect of changes to underlying code like introducing an ORM or retrieving chart data from a difference source.
 
-The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above. Frontend tests were foregone due to time, but normally would be implemented using
+The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above. Frontend-specific tests were foregone due to time, but normally would follow similar patterns using React Testing Library, with the possible addition of E2E tests using Cypress to ensure the final piece of the puzzle, the boundary between front- and back-end.
 
 ## Assumptions
-- The user wants to access their favorites across devices, i.e. a login is needed. As opposed to simply using e.g. cookies or LocalStorage.
+- The user wants to access their favorites across devices, i.e. accounts are needed. As opposed to simply using e.g. cookies or LocalStorage.

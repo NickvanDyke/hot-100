@@ -1,2 +1,0 @@
-INSERT INTO favorite(user_id, song_id) 
-VALUES($1, $2);

@@ -17,7 +17,6 @@ export default {
 	Mutation: {
 		signup: async (root, { name, password }, { repository, reply }) => {
 			const user = await repository.createUser(name, password)
-			// TODO throw and wrap more specific errors from the repository
 			reply.code(201)
 			reply.request.session.set('id', user.id)
 			return { id: user.id }
