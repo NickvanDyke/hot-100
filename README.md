@@ -69,9 +69,12 @@ Backend:
 
 Frontend:
 - React
+- [Vite](https://vitejs.dev/)
+	- Ridiculously fast and easily configurable build tool, especially when compared to CRA and Webpack
+	- Allows more flexibility than something very opinionated like NextJS
 - Apollo Client
 	- Amazing docs
-	- When your data is well-structured, it can often serve as the data store for your app. i.e. no need to also introduce something like Redux
+	- When your data is well-structured, it can often serve as the data store for your app
 - MUI
 	- Easy to use and quickly create an aesthetically pleasing UI
 	- Follows well-established Material Design patterns
