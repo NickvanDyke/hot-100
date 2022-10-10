@@ -21,6 +21,7 @@ export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 					gap={1}>
 					<Typography color='text.secondary'>Hi, {auth.name}!</Typography>
 					<IconButton
+						aria-label='logout'
 						sx={{ p: 0 }}
 						onClick={() => auth.logout(() => onViewFavorites(false))}>
 						<Logout />
@@ -28,6 +29,7 @@ export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 				</Stack>
 			) : (
 				<Button
+					aria-label='Signup or Login'
 					variant='contained'
 					onClick={() => setAuthing('')}>
 					Signup / Login
