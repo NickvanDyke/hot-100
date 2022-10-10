@@ -1,5 +1,5 @@
-import { Chart } from './Chart'
-import { useFavorites } from './hooks/useFavorites'
+import { Chart } from '../../../components/chart/Chart'
+import { useFavorites } from '../hooks/useFavorites'
 
 export const FavoritesChart = () => {
 	const favorites = useFavorites()

@@ -9,9 +9,9 @@ import {
 	Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useAuth } from './hooks/useAuth'
+import { useAuth } from '../hooks/useAuth'
 
-export const Auth = ({ isOpen, onClose, onAuthed, bonusTitle }) => {
+export const AuthDialog = ({ isOpen, onClose, onAuthed, bonusTitle }) => {
 	const [name, setName] = useState('')
 	const [password, setPassword] = useState('')
 	const [err, setErr] = useState()

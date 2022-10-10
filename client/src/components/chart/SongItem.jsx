@@ -1,21 +1,18 @@
 import Favorite from '@mui/icons-material/Favorite'
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
 import {
-	Divider,
 	IconButton,
 	ListItem,
 	ListItemAvatar,
-	ListItemButton,
-	ListItemSecondaryAction,
-	ListItemText,
+	ListItemButton, ListItemText,
 	Skeleton,
 	Stack,
-	Typography,
+	Typography
 } from '@mui/material'
 import { useState } from 'react'
-import { Auth } from './Auth.jsx'
-import { useAuth } from './hooks/useAuth.js'
-import { useFavorite } from './hooks/useFavorite.js'
+import { AuthDialog } from '../AuthDialog.jsx'
+import { useAuth } from '../../hooks/useAuth.js'
+import { useFavorite } from '../../hooks/useFavorite.js'
 
 export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } }) => {
 	const favorite = useFavorite(id)
@@ -38,7 +35,7 @@ export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } 
 
 	return (
 		<div>
-			<Auth
+			<AuthDialog
 				onClose={() => setAuthing(false)}
 				onAuthed={() => favorite(true)}
 				bonusTitle=' to favorite'
@@ -47,7 +44,7 @@ export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } 
 			<ListItem
 				divider={true}
 				disableGutters>
-				<ListItemButton onClick={onClick}>
+				<ListItemButton onClick={onClick} >
 					<ListItemAvatar>
 						<Stack
 							direction='row'
@@ -79,13 +76,14 @@ export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } 
 						primary={title}
 						secondary={artist}
 					/>
-					<ListItemSecondaryAction>
-						<IconButton
-							onClick={() => onFavorite()}
-							color={isFavorite ? 'primary' : undefined}>
-							{isFavorite ? <Favorite /> : <FavoriteBorder />}
-						</IconButton>
-					</ListItemSecondaryAction>
+					<IconButton
+						onClick={(e) => {
+							e.stopPropagation()
+							onFavorite()
+						}}
+						color={isFavorite ? 'primary' : undefined}>
+						{isFavorite ? <Favorite /> : <FavoriteBorder />}
+					</IconButton>
 				</ListItemButton>
 			</ListItem>
 		</div>

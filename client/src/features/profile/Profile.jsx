@@ -3,10 +3,10 @@ import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
 import Logout from '@mui/icons-material/Logout'
 import { Button, Chip, IconButton, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { Auth } from './Auth'
-import { useAuth } from './hooks/useAuth'
+import { AuthDialog } from '../../components/AuthDialog'
+import { useAuth } from '../../hooks/useAuth'
 
-export const Header = ({ viewingFavorites, onViewFavorites }) => {
+export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 	const auth = useAuth()
 	const [authing, setAuthing] = useState(undefined)
 
@@ -46,7 +46,7 @@ export const Header = ({ viewingFavorites, onViewFavorites }) => {
 					Signup / Login
 				</Button>
 			)}
-			<Auth
+			<AuthDialog
 				isOpen={authing !== undefined}
 				bonusTitle={authing}
 				onClose={() => setAuthing(undefined)}

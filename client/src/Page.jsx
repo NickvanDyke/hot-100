@@ -1,9 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import { FavoritesChart } from './FavoritesChart'
-import { Header } from './Header'
+import { FavoritesChart } from './features/favorites/components/FavoritesChart'
+import { Profile } from './features/profile/Profile'
 import { useAtTop } from './hooks/useAtTop'
-import { Top100Chart } from './Top100Chart'
+import { Top100Chart } from './features/top100/components/Top100Chart'
 
 export const Page = () => {
 	const [viewingFavorites, setViewingFavorites] = useState(false)
@@ -28,7 +28,7 @@ export const Page = () => {
 				height='100%'
 				overflow='scroll'
 				ref={ref}>
-				<Header
+				<Profile
 					viewingFavorites={viewingFavorites}
 					onViewFavorites={(view) => setViewingFavorites(view)}
 				/>
