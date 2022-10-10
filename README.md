@@ -2,8 +2,21 @@
 - As a user, I want to be able to view the weekly billboard top 100 songs, including artist, album, and genre
 - As a user, I want to be able to favorite billboard top 100 songs and view a list of all my favorite songs
 
+# Main questions
+With these goals in mind, how should we:
+- Retrieve the data
+- Structure the data
+- Expose the data
+- Display the data
+
+In a way that optimally facilitates our objectives, including:
+- User experience
+- Developer experience
+- Performance + Scalability
+- Reliability
+
 # Proof of concept
-In this repository, you'll find the source for a proof of concept. I often find that actually building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. I particularly find it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture and its use.
+In this repository, you'll find the source for a proof of concept. While not entirely necessary, briefly building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. In particular, it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture and its use before scaling up.
 
 ## Live
 https://billboard.onrender.com (running on free tier, may have to spin up)
@@ -21,7 +34,7 @@ In `server` directory:
 
 `.env` file in root directory:
 ```
-POSTGRES_URL=postgres://<your_postgres_user>@localhost/billboard
+POSTGRES_URL=postgres://<your_local_postgres_user>@localhost/billboard
 ADDRESS=localhost
 PORT=3001
 COOKIE_KEY=16f02b3c7f60ecbea73a95fdc00f56d761284d1b9cbf6f1ccefc9b7a61bba73e # obviously don't use this in prod
@@ -69,6 +82,8 @@ Backend:
 
 Frontend:
 - React
+	- Fast iteration for beautiful UIs
+	- Sensible mental model with reactivity and composition
 - [Vite](https://vitejs.dev/)
 	- Ridiculously fast and easily configurable build tool, especially when compared to CRA and Webpack
 	- Allows more flexibility than something very opinionated like NextJS
@@ -100,10 +115,10 @@ See the [schema](/server/sql/migrations/1_create-initial-schema.sql). The app us
 	- Many-to-many relationship
 	- Cascades on delete to prevent stale data (not that our app allows deletion of songs or users yet)
 
-Data integrity is enforced at the database level where possible.
+Data integrity is enforced at the database level using constraints where possible.
 
 ## Method for accessing data
-The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). It provides an ergonomic shape over the underlying data model, e.g. the frontend can query `isFavorite` on a song, instead of having to query the user's favorite song IDs and manually match those to songs returned by `top100`. Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where prototypes can quickly become production, the extensibility of GraphQL can quickly make it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources into a single API, as needed here.
+The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). It provides an ergonomic shape over the underlying data model, e.g. the frontend can query `isFavorite` on a song, instead of having to query the user's favorite song IDs and manually match those to songs returned by `top100`. Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where prototypes can quickly become production, the extensibility of GraphQL makes it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources into a single API, as needed here.
 
 As far as obtaining the data underlying our API - Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an intuitive API.
 - Allows us to keep a lean, simple client
@@ -113,16 +128,16 @@ As far as obtaining the data underlying our API - Billboard does not expose a pu
 - We need to store all the songs that have ever been displayed to our users anyway, so that they can still view their favorites that have since fallen out of the top 100 and would no longer be in the API response
 - If we extended the project to allow viewing and storing of past weeks, we could also do some fun visualization with such data, like charting trends over time
 
-However, we can't obtain genres from the above method, and instead must turn to [last.fm](https://www.last.fm/api/show/track.getTopTags). When a song's genre is requested in our GraphQL API, it'll check for and return the matching tag if it exists. If not, it'll make a request to last.fm, store the tag, and then return it. Not implemented in POC due to time. We'd be hitting last.fm infrequently, but when we do, it'd be 100 requests at once (doesn't seem to allow requesting multiple song's tags in one request). So in practice we may get rate-limited and have to throttle ourselves to slowly collect tags after refreshing the top 100. At least, for the first time top100 refresh - after that, the number of unseen songs in the top 100 each week is probably low enough to not be an issue.
+However, we can't obtain genres from the above method, and instead must turn to [last.fm](https://www.last.fm/api/show/track.getTopTags). When a song's genre is requested in our GraphQL API, it'll check for and return the matching tag if it exists. If not, it'll make a request to last.fm, store the tag, and then return it. Not implemented in PoC due to time. We'd be hitting last.fm infrequently, but when we do, it'd be 100 requests at once (doesn't seem to allow requesting multiple song's tags in one request). So in practice we may get rate-limited and have to throttle ourselves to slowly collect tags after refreshing the top 100. At least, for the first top 100 refresh - after that, the number of unseen songs in the top 100 each week is probably low enough to not be an issue.
 
 The [repository](/server/src/data/repository.js) coordinates the [database](/server/src/data/db.js) and [Billboard API](/server/src/data/billboard.js), implementing the above described business logic and leaving our GraphQL resolvers simple.
 
 ## Front-end architecture
-- Apollo Client serves as our model
-- React components handle the view
+- Apollo Client is our model, updating and providing our data
+- React components handle displaying this data
 - [Custom hooks](/client/src/hooks/useAuth.js) bridge the view and model
 - Files structured according to [Bulletproof React](https://github.com/alan2207/bulletproof-react)
-- Built with [Vite](https://vitejs.dev/), a ridiculously fast and easily configurable build tool, especially when compared to CRA and Webpack. Also allows more flexibility than NextJS.
+- Built with [Vite](https://vitejs.dev/)
 - Compressed and served by the Fastify server
 
 ## Testing strategy
