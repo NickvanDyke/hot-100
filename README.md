@@ -1,3 +1,7 @@
+# User stories
+- As a user, I want to be able to view the weekly billboard top 100 songs, including artist, album, and genre
+- As a user, I want to be able to favorite billboard top 100 songs and view a list of all my favorite songs
+
 # Proof of concept
 In this repository, you'll find the source for a proof of concept. I often find that actually building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. I particularly find it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture and its use.
 
