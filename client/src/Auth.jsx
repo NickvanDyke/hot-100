@@ -11,7 +11,7 @@ import {
 import { useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 
-export const Auth = ({ isOpen, onClose, onAuthed }) => {
+export const Auth = ({ isOpen, onClose, onAuthed, bonusTitle }) => {
 	const [name, setName] = useState('')
 	const [password, setPassword] = useState('')
 	const [err, setErr] = useState()
@@ -45,7 +45,7 @@ export const Auth = ({ isOpen, onClose, onAuthed }) => {
 			open={isOpen}
 			onClose={onClosed}>
 			<DialogTitle>
-				Sign up or Login{onAuthed ? ' to favorite' : ''}
+				Sign up or Login{bonusTitle}
 			</DialogTitle>
 			<DialogContent>
 				<Stack gap={2}>

@@ -37,6 +37,7 @@ export const SongItem = ({
 			<Auth
 				onClose={() => setAuthing(false)}
 				onAuthed={() => favorite(true)}
+				bonusTitle=' to favorite'
 				isOpen={authing}
 			/>
 			<ListItem divider={<Divider />}>

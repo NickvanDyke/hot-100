@@ -42,12 +42,13 @@ export const useAuth = () => {
 				onError: (err) => cb(null, err.graphQLErrors[0].message),
 			})
 		},
-		logout: () => {
+		logout: (cb) => {
 			logout({
 				// Ideally should manually update Song.isFavorite on the cache
 				refetchQueries: [Top100, Favorites],
 				onCompleted: () => {
 					removeCookie('name')
+					cb()
 				},
 			})
 		},
