@@ -130,7 +130,7 @@ As far as obtaining the data underlying our API - Billboard does not expose a pu
 
 However, we can't obtain genres from the above method, and instead must turn to [last.fm](https://www.last.fm/api/show/track.getTopTags). When a song's genre is requested in our GraphQL API, it'll check for and return the matching tag if it exists. If not, it'll make a request to last.fm, store the tag, and then return it. Not implemented in PoC due to time. We'd be hitting last.fm infrequently, but when we do, it'd be 100 requests at once (doesn't seem to allow requesting multiple song's tags in one request). So in practice we may get rate-limited and have to throttle ourselves to slowly collect tags after refreshing the top 100. At least, for the first top 100 refresh - after that, the number of unseen songs in the top 100 each week is probably low enough to not be an issue.
 
-The [repository](/server/src/data/repository.js) coordinates the [database](/server/src/data/db.js) and [Billboard API](/server/src/data/billboard.js), implementing the above described business logic and leaving our GraphQL resolvers simple.
+The [repository](/server/src/data/repository.js) coordinates the [database](/server/src/data/db.js) and [Billboard API](/server/src/data/billboard.js), implementing the above described business logic and leaving our GraphQL [resolvers](/server/src/api/resolvers.js) and [loaders](/server/src/api/loaders.js) simple.
 
 ## Front-end architecture
 - Apollo Client is our model, updating and providing our data
