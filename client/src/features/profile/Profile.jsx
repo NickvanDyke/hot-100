@@ -14,20 +14,7 @@ export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 		<Stack
 			justifyContent='space-between'
 			alignItems='center'
-			pl={3}
-			pr={2}
-			direction='row'>
-			<Chip
-				sx={{ my: 0.5 }}
-				label='FAVORITES'
-				icon={viewingFavorites ? <Favorite /> : <FavoriteBorder />}
-				onClick={() => {
-					if (auth.name) onViewFavorites(!viewingFavorites)
-					else setAuthing(' to view favorites')
-				}}
-				color={viewingFavorites ? 'primary' : 'default'}
-				variant={viewingFavorites ? 'filled' : 'outlined'}
-			/>
+			gap={1}>
 			{auth.name ? (
 				<Stack
 					direction='row'
@@ -41,10 +28,20 @@ export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 				</Stack>
 			) : (
 				<Button
-					variant='outlined'
+					variant='contained'
 					onClick={() => setAuthing('')}>
 					Signup / Login
 				</Button>
+			)}
+			{auth.name && (
+				<Chip
+					sx={{ my: 0.5 }}
+					label='FAVORITES'
+					icon={viewingFavorites ? <Favorite /> : <FavoriteBorder />}
+					onClick={() => onViewFavorites(!viewingFavorites)}
+					color={viewingFavorites ? 'primary' : 'default'}
+					variant={viewingFavorites ? 'filled' : 'outlined'}
+				/>
 			)}
 			<AuthDialog
 				isOpen={authing !== undefined}

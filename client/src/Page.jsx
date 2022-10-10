@@ -11,29 +11,27 @@ export const Page = () => {
 
 	return (
 		<Stack height='100%'>
-			<Box
+			<Stack
+				direction='row'
 				boxShadow={atTop ? 0 : 4}
 				sx={{ transition: 'box-shadow 0.3s' }}
-				direction='row'
 				alignItems='center'
+				px={4}
+				py={2}
+				gap={2}
 				justifyContent='space-between'>
-				<Typography
-					fontSize='min(10vw, 64px)'
-					px={4}
-					py={2}>
-					Billboard Top 100
-				</Typography>
-			</Box>
-			<Stack
-				height='100%'
-				overflow='scroll'
-				ref={ref}>
+				<Typography fontSize='min(10vw, 64px)'>Billboard Top 100</Typography>
 				<Profile
 					viewingFavorites={viewingFavorites}
 					onViewFavorites={(view) => setViewingFavorites(view)}
 				/>
-				{viewingFavorites ? <FavoritesChart /> : <Top100Chart />}
 			</Stack>
+			<Box
+				height='100%'
+				overflow='scroll'
+				ref={ref}>
+				{viewingFavorites ? <FavoritesChart /> : <Top100Chart />}
+			</Box>
 		</Stack>
 	)
 }
