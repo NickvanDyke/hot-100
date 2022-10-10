@@ -58,7 +58,7 @@ Backend:
 	- JavaScript/TypeScript on both the front and back end makes it easy for developers to work on both sides of the application, requiring familiarity with only one language
 - Fastify
 	- Performant
-	- Ergonomic plugin API, especially compared to Express's middleware
+	- Intelligible plugin API, especially compared to Express's middleware
 - [Mercurius](https://mercurius.dev/#/)
 	- Performant with simple setup and configuration
 	- Flexible, easily allowing us to combine our multiple data sources into a single API for the client to consume
@@ -105,7 +105,7 @@ Data integrity is enforced at the database level where possible.
 ## Method for accessing data
 The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). It provides an ergonomic shape over the underlying data model, e.g. the frontend can query `isFavorite` on a song, instead of having to query the user's favorite song IDs and manually match those to songs returned by `top100`. Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where prototypes can quickly become production, the extensibility of GraphQL can quickly make it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources into a single API, as needed here.
 
-As far as obtaining the data underlying our API - Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an ergonomic API.
+As far as obtaining the data underlying our API - Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an intuitive API.
 - Allows us to keep a lean, simple client
 - We can easily swap out the top 100 data source if a more elegant or alternative source appears in the future
 - Since the top 100 only updates once a week, storing and serving it ourselves saves us from excessively hitting Billboard's "API"
