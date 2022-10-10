@@ -32,7 +32,7 @@ export const Header = ({ viewingFavorites, onViewFavorites }) => {
 				<Stack
 					direction='row'
 					gap={1}>
-					<Typography color='text.secondary'>Welcome, {auth.name}</Typography>
+					<Typography color='text.secondary'>Hi, {auth.name}!</Typography>
 					<IconButton
 						sx={{ p: 0 }}
 						onClick={() => auth.logout(() => onViewFavorites(false))}>
@@ -43,7 +43,7 @@ export const Header = ({ viewingFavorites, onViewFavorites }) => {
 				<Button
 					variant='outlined'
 					onClick={() => setAuthing('')}>
-					Signup/Login
+					Signup / Login
 				</Button>
 			)}
 			<Auth
