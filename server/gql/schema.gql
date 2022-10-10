@@ -16,8 +16,8 @@ type Song {
 	title: String!
 	artist: String!
 	cover: String!
-	tag: String!
-	rank: Int!
+	tag: String
+	rank: Int
 	isFavorite: Boolean!
 }
 
