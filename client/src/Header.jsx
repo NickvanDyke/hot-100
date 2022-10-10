@@ -14,11 +14,11 @@ export const Header = ({ viewingFavorites, onViewFavorites }) => {
 		<Stack
 			justifyContent='space-between'
 			alignItems='center'
-			pt={1}
 			pl={3}
 			pr={2}
 			direction='row'>
 			<Chip
+				sx={{ my: 0.5 }}
 				label='FAVORITES'
 				icon={viewingFavorites ? <Favorite /> : <FavoriteBorder />}
 				onClick={() => {
@@ -42,7 +42,7 @@ export const Header = ({ viewingFavorites, onViewFavorites }) => {
 			) : (
 				<Button
 					variant='outlined'
-					onClick={() => setAuthing(true)}>
+					onClick={() => setAuthing('')}>
 					Signup/Login
 				</Button>
 			)}

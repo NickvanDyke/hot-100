@@ -1,6 +1,5 @@
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
 import {
-	Divider,
 	IconButton,
 	ListItem,
 	ListItemAvatar,
@@ -13,7 +12,7 @@ import {
 
 export const SongItemSkeleton = ({ index }) => {
 	return (
-		<ListItem divider={<Divider />}>
+		<ListItem divider={true}>
 			<ListItemAvatar>
 				<Stack
 					direction='row'

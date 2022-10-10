@@ -40,7 +40,7 @@ export const SongItem = ({
 				bonusTitle=' to favorite'
 				isOpen={authing}
 			/>
-			<ListItem divider={<Divider />}>
+			<ListItem divider={true}>
 				<ListItemAvatar>
 					<Stack
 						direction='row'

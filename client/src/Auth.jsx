@@ -45,7 +45,7 @@ export const Auth = ({ isOpen, onClose, onAuthed, bonusTitle }) => {
 			open={isOpen}
 			onClose={onClosed}>
 			<DialogTitle>
-				Sign up or Login{bonusTitle}
+				Sign up or Login{bonusTitle ? bonusTitle : ''}
 			</DialogTitle>
 			<DialogContent>
 				<Stack gap={2}>
