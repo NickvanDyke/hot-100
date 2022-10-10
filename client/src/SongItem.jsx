@@ -73,7 +73,7 @@ export const SongItem = ({
 					secondary={artist}
 				/>
 				<ListItemSecondaryAction>
-					<IconButton onClick={() => onFavorite()}>
+					<IconButton onClick={() => onFavorite()} color={isFavorite ? 'primary' : undefined}>
 						{isFavorite ? <Favorite /> : <FavoriteBorder />}
 					</IconButton>
 				</ListItemSecondaryAction>
