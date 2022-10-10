@@ -1,8 +1,6 @@
 describe('favorite', async function () {
 	beforeEach(async function () {
-		this.song = await this.db
-			.q('insert_song', ['title', 'artist', 'cover', 1, new Date()])
-			.then((rows) => rows[0])
+		this.song = await this.db.insertSong('title', 'artist', 'cover', 1, new Date())
 	})
 
 	describe('given the user is logged in', async function () {
@@ -14,13 +12,15 @@ describe('favorite', async function () {
 			await this.robot.favorite(this.song.id, true)
 			const favorites = await this.robot.getFavorites()
 
-			assert.deepEqual(favorites, [{
-				title: this.song.title,
-				artist: this.song.artist,
-				cover: this.song.cover,
-				rank: this.song.rank,
-				isFavorite: true
-			}])
+			assert.deepEqual(favorites, [
+				{
+					title: this.song.title,
+					artist: this.song.artist,
+					cover: this.song.cover,
+					rank: this.song.rank,
+					isFavorite: true,
+				},
+			])
 		})
 
 		it('given one favorited song, when the user unfavorites it and retrieves their favorites, then the favorites are empty', async function () {

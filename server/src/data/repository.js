@@ -1,40 +1,45 @@
 import { hasBillboardUpdatedSince } from '../util/hasBillboardUpdatedSince.js'
 
 export default (db, billboard) => ({
-	createUser: async (name, password) => db.q('insert_user', [name, password]).then((rows) => rows[0]),
-	getUserByName: async (name) => db.q('get_user_by_name', [name]).then((rows) => rows[0]),
-	getUserById: async (id) => db.q('get_user_by_id', [id]).then((rows) => rows[0]),
+	createUser: (name, password) => db.insertUser(name, password),
+	getUserByName: (name) => db.getUserByName(name),
+	getUserById: (id) => db.getUserById(id),
 
 	favoriteSong: (userId, songId, isFavorite) => {
 		if (isFavorite) {
-			return db.q('insert_favorite', [userId, songId])
+			return db.insertFavorite(userId, songId)
 		} else {
-			return db.q('delete_favorite', [userId, songId])
+			return db.deleteFavorite(userId, songId)
 		}
 	},
 
 	getTop100SongIds: async () => {
-		const lastUpdated = await db.q('get_songs_last_updated').then((rows) => rows[0].max)
+		const lastUpdated = await db.getSongsLastUpdated()
 		if (!lastUpdated || hasBillboardUpdatedSince(lastUpdated)) {
 			const chart = await billboard.getTop100()
 			const now = new Date()
-			await db.q('reset_song_ranks')
+			await db.resetSongRanks()
 			await Promise.all(
 				chart.songs.map(
-					async ({ title, artist, cover, rank }) => await db.q('insert_song', [title, artist, cover, rank, now])
+					async ({ title, artist, cover, rank }) =>
+						await db.insertSong(title, artist, cover, rank, now)
 				)
 			)
 		}
-		return await db.q('get_top_100').then((rows) => rows.map((row) => row.id))
+		return db.getTop100SongIds()
 	},
-	getFavoriteSongs: async (userId) => db.q('get_favorite_songs', [userId]),
+	getFavoriteSongs: (userId) => db.getFavoriteSongs(userId),
 
-	getSongTitles: (songIds) => db.q('get_song_titles', [songIds]).then((rows) => rows.map((row) => row.title)),
-	getSongArtists: (songIds) => db.q('get_song_artists', [songIds]).then((rows) => rows.map((row) => row.artist)),
-	getSongCovers: (songIds) => db.q('get_song_covers', [songIds]).then((rows) => rows.map((row) => row.cover)),
-	getSongRanks: (songIds) => db.q('get_song_ranks', [songIds]).then((rows) => rows.map((row) => row.rank)),
+	getSongTitles: (songIds) =>
+		db.getSongTitles(songIds),
+	getSongArtists: (songIds) =>
+		db.getSongArtists(songIds),
+	getSongCovers: (songIds) =>
+		db.getSongCovers(songIds),
+	getSongRanks: (songIds) =>
+		db.getSongRanks(songIds),
 	getSongTags: async (songIds) => {
-		const existingTags = db.q('get_song_tags', [songIds]).then((rows) => rows.map((row) => row.tag))
+		const existingTags = db.getSongTags(songIds)
 		for (const [index, existingTag] of existingTags.entries()) {
 			if (!existingTag) {
 				const songId = songIds[index]

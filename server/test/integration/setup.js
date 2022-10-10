@@ -18,7 +18,7 @@ before(async function () {
 })
 
 beforeEach(async function () {
-	await this.db.q('truncate_tables')
+	await this.db.truncateTables()
 	this.robot = new Robot(this.fastify)
 })
 
