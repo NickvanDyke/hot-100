@@ -3,27 +3,19 @@ import { SongItem } from './SongItem'
 import { SongItemSkeleton } from './SongItemSkeleton'
 
 export const Chart = ({ songs }) => {
-	if (!songs) {
-		return (
-			<List>
-				{Array.from({ length: 100 }, (_, i) => (
-					<SongItemSkeleton
-						key={i}
-						index={i}
-					/>
-				))}
-			</List>
-		)
-	}
+	const items = songs
+		? songs.map((song) => (
+			<SongItem
+				key={song.id}
+				song={song}
+			/>
+		))
+		: Array.from({ length: 100 }, (_, i) => (
+			<SongItemSkeleton
+				key={i}
+				index={i}
+			/>
+		))
 
-	return (
-		<List>
-			{songs.map((song) => (
-				<SongItem
-					key={song.id}
-					song={song}
-				/>
-			))}
-		</List>
-	)
+	return <List disablePadding>{items}</List>
 }
