@@ -22,8 +22,7 @@
 	},
 	"eslintConfig": {
 		"extends": [
-			"react-app",
-			"react-app/jest"
+			"react-app"
 		]
 	},
 	"browserslist": {
@@ -42,10 +41,6 @@
 		"@rollup/plugin-graphql": "^1.1.0",
 		"@testing-library/react": "^13.2.0",
 		"eslint": "^8.15.0",
-		"eslint-plugin-jest": "^26.2.2",
 		"eslint-plugin-react": "^7.29.4"
-	},
-	"reactSnap": {
-		"source": "./dist"
 	}
 }
