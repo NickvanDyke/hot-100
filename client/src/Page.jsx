@@ -20,7 +20,7 @@ export const Page = () => {
 				py={2}
 				gap={2}
 				justifyContent='space-between'>
-				<Typography fontSize='min(10vw, 64px)'>Billboard Top 100</Typography>
+				<Typography fontSize='min(8vw, 4rem)'>Billboard Top&nbsp;100</Typography>
 				<Profile
 					viewingFavorites={viewingFavorites}
 					onViewFavorites={(view) => setViewingFavorites(view)}

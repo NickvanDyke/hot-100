@@ -29,6 +29,7 @@ export const Profile = ({ viewingFavorites, onViewFavorites }) => {
 				</Stack>
 			) : (
 				<Button
+					sx={{ whiteSpace: 'nowrap' }}
 					aria-label='Signup or Login'
 					variant='contained'
 					onClick={() => setAuthing('')}>
