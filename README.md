@@ -5,7 +5,7 @@
 # Main questions
 With these goals in mind, how should we:
 - Retrieve the data
-- Structure the data
+- Store the data
 - Expose the data
 - Display the data
 
@@ -16,7 +16,7 @@ In a way that optimally facilitates our objectives, including:
 - Reliability
 
 # Proof of concept
-In this repository, you'll find the source for a proof of concept. While not entirely necessary, briefly building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. In particular, it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture and its use before scaling up.
+In this repository, you'll find the source for a proof of concept. While not entirely necessary, briefly building out an idea requires you to think more critically, and helps catch intricacies that you may miss when purely drawing it up. In particular, it facilitates an ergonomic API and positive DX, as it forces you to stumble on and confront pain points in your ideas and architecture before scaling up, after which re-architecting becomes more laborious and involved.
 
 ## Live
 https://billboard.onrender.com (running on free tier, may have to spin up)
