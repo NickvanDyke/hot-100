@@ -1,9 +1,7 @@
 #import './fragments/SongFields.gql'
 
-query Favorites {
-	user {
-	  favorites {
+query MyFavorites {
+	myFavorites {
 		...SongFields
-	  }
 	}
 }

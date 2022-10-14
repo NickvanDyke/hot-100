@@ -14,16 +14,16 @@ export default async (fastify, options) => {
 	await fastify.register(mercurius, {
 		schema: makeExecutableSchema({
 			typeDefs: fs.readFileSync('./gql/schema.gql').toString(),
-			resolvers,
+			resolvers: resolvers(options.services),
 		}),
-		loaders: loaders,
+		loaders: loaders(options.songAdapter),
 		context: (req, res) => ({
-			repository: options.repository,
 			user: req.user,
 		}),
 		errorFormatter: (error, ...args) => {
 			console.error(error)
 			return mercurius.defaultErrorFormatter(error, ...args)
 		},
+		graphiql: true
 	})
 }

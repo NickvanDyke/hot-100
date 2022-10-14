@@ -1,8 +1,9 @@
 import { useMutation } from '@apollo/client'
-import { Top100 } from '../gql/Top100.gql'
-import { Favorites } from '../gql/Favorites.gql'
+import { MyFavorites } from '../gql/MyFavorites.gql'
+import { MyFavoriteIds } from '../gql/MyFavoriteIds.gql'
 import { Signup } from '../gql/Signup.gql'
 import { Login } from '../gql/Login.gql'
+import { makeReference } from '@apollo/client'
 import { useCookies } from 'react-cookie'
 import { Logout } from '../gql/Logout.gql'
 
@@ -20,9 +21,9 @@ export const useAuth = () => {
 					name,
 					password,
 				},
-				refetchQueries: [Top100, Favorites],
+				refetchQueries: [MyFavorites, MyFavoriteIds],
 				onCompleted: (data) => {
-					setCookie('name', data.signup.name, { path: '/', expires: false })
+					setCookie('name', data.signup, { path: '/', expires: false })
 					cb(data)
 				},
 				onError: (err) => cb(null, err.graphQLErrors[0].message),
@@ -34,9 +35,9 @@ export const useAuth = () => {
 					name,
 					password,
 				},
-				refetchQueries: [Top100, Favorites],
+				refetchQueries: [MyFavorites, MyFavoriteIds],
 				onCompleted: (data) => {
-					setCookie('name', data.login.name, { path: '/', expires: false })
+					setCookie('name', data.login, { path: '/', expires: false })
 					cb(data)
 				},
 				onError: (err) => cb(null, err.graphQLErrors[0].message),
@@ -44,11 +45,19 @@ export const useAuth = () => {
 		},
 		logout: (cb) => {
 			logout({
-				// Ideally should manually update Song.isFavorite on the cache
-				refetchQueries: [Top100, Favorites],
 				onCompleted: () => {
 					removeCookie('name')
 					cb()
+				},
+				update: (cache) => {
+					cache.modify({
+						id: cache.identify(makeReference('ROOT_QUERY')),
+						fields: {
+							myFavorites: (existingFavorites = []) => {
+								return []
+							},
+						},
+					})
 				},
 			})
 		},

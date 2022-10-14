@@ -1,4 +1,4 @@
-import { getLastMonday } from '../../src/util/getLastMonday.js'
+import getLastMonday from '../../src/util/getLastMonday.js'
 
 describe('getLastMonday', async function () {
 	it('returns the last monday', async function () {

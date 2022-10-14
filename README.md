@@ -46,8 +46,7 @@ Then, `npm run build` in `client` and `npm start` in `server` to mimic productio
 A non-exhaustive list of important things missing from the PoC that would be relatively vital before production:
 - Salting + hashing passwords
 - Email signup + verification, password reset
-- More detailed error responses from API
-- More error handling in the frontend
+- Improved error handling in backend and frontend
 - Stringent password requirements
 - More elegant login/signup flows
 
@@ -72,9 +71,10 @@ Backend:
 - Fastify
 	- Performant
 	- Intelligible plugin API, especially compared to Express's middleware
-- [Mercurius](https://mercurius.dev/#/)
+- [Mercurius](https://mercurius.dev/#/) GraphQL
 	- Performant with simple setup and configuration
-	- Flexible, easily allowing us to combine our multiple data sources into a single API for the client to consume
+	- Declarative
+	- Self-documenting
 - PostgresQL
 	- Many features
 	- Good SQL standard conformance
@@ -89,7 +89,7 @@ Frontend:
 	- Allows more flexibility than something very opinionated like NextJS
 - Apollo Client
 	- Amazing docs
-	- When your data is well-structured, it can often serve as the data store for your app
+	- Can serve as the data model for your app, including caching, pagination, retry logic, optimistic UI, and more
 - MUI
 	- Easy to use and quickly create an aesthetically pleasing UI
 	- Follows well-established Material Design patterns
@@ -118,11 +118,43 @@ See the [schema](/server/sql/migrations/1_create-initial-schema.sql). The app us
 Data integrity is enforced at the database level using constraints where possible.
 
 ## Method for accessing data
-The server exposes a GraphQL API for the client to consume - see the [schema](/server/gql/schema.gql). It provides an ergonomic shape over the underlying data model, e.g. the frontend can query `isFavorite` on a song, instead of having to query the user's favorite song IDs and manually match those to songs returned by `top100`. Realistically for such a small and simple project, REST might be more appropriate. But in a real-world scenario, where prototypes can quickly become production, the extensibility of GraphQL makes it worth the slightly extra initial effort.  It's also conducive to combining multiple data sources into a single API, as needed here.
+Overall, the backend follows [Hexagonal Architecture/Ports and Adapters](https://medium.com/codex/clean-architecture-for-dummies-df6561d42c94), which separates our business domain from the technology we use to provide it. The article and others it links to explain the concept and its benefits well, so I'll mostly focus on how our app implements it (for which it is somewhat overkill, but for demonstration purposes).
 
-As far as obtaining the data underlying our API - Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. Our server abstracts this grossness away from the client and handles retrieving and storing the latest top 100 when needed, and exposing it to the client in an intuitive API.
+(Note the MVP is missing some e.g. proper validation, error handling, and mapping between layer boundaries compared to a production-ready app)
+
+### Entities
+Business objects - songs and users, for our app. Mapped from and to by the driven adapters on the boundaries between business and infrastructure. Technically per DDD, business invariants like the uniqueness of a song's title + artist, or requirements on a user's password, should be enforced here as well. But in the interest of KISS, the MVP has left that to the database. See [here](https://github.com/ardalis/DDD-NoDuplicates) for alternative approaches.
+
+### Use cases
+The domain logic of our app; looking at these should [scream](http://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html) at a developer what our app does.
+
+As outlined earlier, we have two user stories, which break down a bit further:
+- As a user, I want to be able to view the weekly billboard top 100 songs, including artist, album, and genre
+	- Get top 100 songs
+- As a user, I want to be able to favorite billboard top 100 songs and view a list of all my favorite songs
+	- Favorite a song
+	- Unfavorite a song
+	- Get my favorites
+
+Additionally, we're assuming that the user wants their favorites to be persisted and available on another device, which we have two more use cases to support:
+- Signup
+- Login
+
+Since use cases should only be concerned with the business logic, they should not have to care about the implementations that execute that logic. We invert that control by having the use cases depend on ports, which are implemented by the adapters below. Normally interfaces would represent ports, but since the MVP is in JS, the interface is instead somewhat implied by the methods called on the ports.
+
+See [the use case for retrieving the top 100 songs](server/src/service/getTop100Songs.js) as an example. It receives a `songPort` for retrieving and persisting songs from the DB, and a `billboardPort` for accessing the Billboard API. Per our domain logic, it retrieves and stores the latest top 100 songs from the billboard API if necessary, and then returns the stored top 100 songs.
+
+### Adapters
+Mediators between the 'outside world' and the domain of our app. Concrete implementations of the ports mentioned above that use cases receive as dependencies. These can be further divided into "Driving" and "Driven" adapters, based on whether they use or are used by our domain logic respectively. We have a few driven adapters [such as this](server/src/adapter/userAdapter.js) for talking to the database, as well as [one](server/src/adapter/billboardAdapter.js) for talking to the Billboard API. Our singular driving adapter (for now) is our [GraphQL API](server/src/api/graphql.js) and its [schema](server/gql/schema.gql).
+
+While we currently expose the data via GraphQL, we could easily add REST or even CLI driving adapters to access our app. On the driven side, we could swap our database implementation or source of Billboard data. All without having to touch the value-providing domain layer. Or more likely to be taken advantage of - driven adapters can be updated to point to microservices as/if we split up our application over time.
+
+### Infrastructure
+Finally, Fastify running on NodeJS [orchestrates](server/src/server.js) the adapters and use cases to fully expose it to the outside world as a web server. This is also where we connect to our Postgres DB and manually wire up our dependencies.
+
+### Implementation details of obtaining data
+Billboard does not expose a public API. Fortunately an up-to-date [library](https://github.com/darthbatman/billboard-top-100) exists that scrapes the HTML. We could run this directly in the client, but keeping it server-side has a few benefits:
 - Allows us to keep a lean, simple client
-- We can easily swap out the top 100 data source if a more elegant or alternative source appears in the future
 - Since the top 100 only updates once a week, storing and serving it ourselves saves us from excessively hitting Billboard's "API"
 - More conducive to SSR and caching
 - We need to store all the songs that have ever been displayed to our users anyway, so that they can still view their favorites that have since fallen out of the top 100 and would no longer be in the API response
@@ -130,36 +162,39 @@ As far as obtaining the data underlying our API - Billboard does not expose a pu
 
 However, we can't obtain genres from the above method, and instead must turn to [last.fm](https://www.last.fm/api/show/track.getTopTags). When a song's genre is requested in our GraphQL API, it'll check for and return the matching tag if it exists. If not, it'll make a request to last.fm, store the tag, and then return it. Not implemented in PoC due to time. We'd be hitting last.fm infrequently, but when we do, it'd be 100 requests at once (doesn't seem to allow requesting multiple song's tags in one request). So in practice we may get rate-limited and have to throttle ourselves to slowly collect tags after refreshing the top 100. At least, for the first top 100 refresh - after that, the number of unseen songs in the top 100 each week is probably low enough to not be an issue.
 
-The [repository](/server/src/data/repository.js) coordinates the [database](/server/src/data/db.js) and [Billboard API](/server/src/data/billboard.js), implementing the above described business logic and leaving our GraphQL [resolvers](/server/src/api/resolvers.js) and [loaders](/server/src/api/loaders.js) simple.
-
 ## Front-end architecture
 - Apollo Client is our model, updating and providing our data
 - React components handle displaying this data
-- [Custom hooks](/client/src/hooks/useAuth.js) bridge the view and model
+- Custom hooks bridge the view and model with the know-how to employ [queries](client/src/features/top100/hooks/useTop100.js) and [commands](client/src/hooks/useFavorite.js)
 - Files structured according to [Bulletproof React](https://github.com/alan2207/bulletproof-react)
 - Built with [Vite](https://vitejs.dev/)
 - Compressed and served by the Fastify server
 
 ## Testing strategy
 Tests follow Behavior Driven Development, where arrangements, actions, and assertions ('Given When Then') are made clear in the test names and given rise from user stories.
-- Easy to map user stories to test cases, write them first, and then iterate
+- Easy to map user stories to test cases, write them first, and then iterate with quick feedback
 - Tests serve as readable documentation of how the system should behave
 - Naturally leads you to consider additional use- and edge-cases
+- Allows for safe refactoring of how the behavior is technically implemented
 
 ### Integration
-Here, tests use the Robot pattern to interface with the system as a user would, and assert that the 'black box' behaves as expected. When the client uses the API to favorite a song and then requests the user's favorites, then it'd expect that song to be there. When they click the favorite button in the UI, then they'd expect it to change to displaying the opposite state.
-- Resilient to implementation changes; you can modify the implementation without having to update a multitude of tests
-- The [robot](/server/test/integration/robot.js) serves as documentation for how the user interacts with the system
+At a highest level, integration tests use the Robot pattern to interface with the system as a user would, taking vertical slices of functionality and asserting that the 'black box' behaves as expected. When the client uses the API to favorite a song and then requests the user's favorites, then it'd expect that song to be there. When they click the favorite button in the UI, then they'd expect it to change to displaying the opposite state.
+- The [robot](server/test/integration/robot.js) serves as documentation for how the user interacts with the system
 - The robot abstracts away how we interact with the system, easily adapting to API surface changes and making tests easy to maintain, read, and write
 - Minimizes time spent faking, mocking, stubbing, spying etc. and most closely mimicks the real world
 - Bang for your buck - you can get good coverage and confidence with a relatively small number of tests
 
-However, integration tests can fall short when we *do* want to verify internal behavior, or test narrow, specific scenarios.
+Thanks to the distinction between driving and driven adapters, we can also test those separately here if desired, e.g. verifying that the GraphQL API ends up calling the proper use case, or a complex SQL query returns the data we'd expect from a given database state. 
+
+However, integration tests can fall short when we *do* want to verify internal behavior, or test narrow, specific scenarios. They take more configuration and have less granularity. Given the architecture of our backend, integration tests are best for verifying that our infrastructure and adapters are set up correctly, as opposed to our business logic since we can easily test use cases in isolation.
 
 ### Unit
-Here we test system components in isolation to explore specific or otherwise difficult to reproduce or verify scenarios. The [internal behavior of the repository](/server/test/unit/repository.test.js) or [determining whether we need to re-fetch the top 100](/server/test/unit/hasBillboardUpdatedSince.test.js). Additionally, architecting our code such that it's conducive to unit testing has benefits of its own, like modularity and separation of concerns. For example, the [repository](/server/src/data/repository.js) receives a DB and billboard API, and is agnostic to their implementation. In tests, this allows us to easily swap out either dependency for a mock or fake to test the repository in isolation and induce conditions that we normally don't have control over, like a 500 response from the Billboard website. In production, it minimizes the ripple effect of changes to underlying code like introducing an ORM or retrieving chart data from a difference source.
+The Hexagonal Architecture of our backend makes it extremely easy to unit test. Integration tests take care of testing the infrastructure, so here we're left with domain logic - the use cases and entities. Since use cases receive ports, or interfaces, we can inject mocks or fakes for our tests, isolating the business logic executed by the use case and inducing difficult to reproduce scenarios, like a 500 response from the Billboard API. The test then becomes the driving port of the use case. For example, [testing that we don't unnecessarily hit the Billboard API](server/test/unit/getTop100Songs.test.js). Since entities have no dependencies, unit testing them is as simple as instantiating, interacting, and asserting. We also test [pure utility functions](server/test/unit/hasBillboardUpdatedSince.test.js). Depending on interfaces makes our unit tests resilient to implementation changes, only needing updating when the domain logic that they assert changes.
 
 The tests in this repository are not meant to be all-encompassing due to the context, but to serve as an applied example of the above. Frontend-specific tests were foregone due to time, but normally would follow similar patterns using React Testing Library, with the possible addition of E2E tests using Cypress to ensure the final piece of the puzzle, the boundary between front- and back-end.
+
+See [here](https://medium.com/codex/a-testing-strategy-that-supports-refactoring-36999d8c60b8) for a more in-depth discussion of our approach to testing and why we take it.
+
 
 ## Assumptions
 - The user wants to access their favorites across devices, i.e. accounts are needed. As opposed to simply using e.g. cookies or LocalStorage.

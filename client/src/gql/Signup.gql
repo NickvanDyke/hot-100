@@ -1,5 +1,3 @@
 mutation Signup($name: String!, $password: String!) {
-	signup(name: $name, password: $password) {
-		name
-	}
+	signup(name: $name, password: $password)
 }

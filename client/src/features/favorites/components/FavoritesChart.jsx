@@ -1,7 +1,12 @@
 import { Chart } from '../../../components/chart/Chart'
-import { useFavorites } from '../hooks/useFavorites'
+import { useMyFavorites } from '../hooks/useMyFavorites'
 
 export const FavoritesChart = () => {
-	const favorites = useFavorites()
-	return <Chart songs={favorites} />
+	const favorites = useMyFavorites()
+	return (
+		<Chart
+			songs={favorites}
+			favoriteIds={favorites?.map((song) => song.id)}
+		/>
+	)
 }

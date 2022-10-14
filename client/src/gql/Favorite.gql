@@ -1,6 +1,5 @@
-mutation Favorite($songId: Int!, $isFavorite: Boolean!) {
-  favorite(songId: $songId, isFavorite: $isFavorite) {
-	id
-	isFavorite
+mutation Favorite($songId: Int!) {
+  favorite(songId: $songId) {
+    id
   }
 }

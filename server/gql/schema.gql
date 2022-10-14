@@ -1,14 +1,15 @@
 type Query {
 	top100: [Song!]!
-	user(id: Int): User!
+	myFavorites: [Song!]!
 }
 
 type Mutation {
-	signup(name: String!, password: String!): User!
-	login(name: String!, password: String!): User!
+	signup(name: String!, password: String!): String!
+	login(name: String!, password: String!): String!
 	logout: Boolean!
 
-	favorite(songId: Int!, isFavorite: Boolean!): Song!
+	favorite(songId: Int!): Song!
+	unfavorite(songId: Int!): Song!
 }
 
 type Song {
@@ -18,11 +19,4 @@ type Song {
 	cover: String!
 	tag: String
 	rank: Int
-	isFavorite: Boolean!
-}
-
-type User {
-	id: Int!
-	name: String!
-	favorites: [Song!]!
 }

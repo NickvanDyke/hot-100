@@ -1,5 +1,3 @@
-import { getLastMonday } from './getLastMonday.js'
+import getLastMonday from './getLastMonday.js'
 
-export function hasBillboardUpdatedSince(timestamp) {
-	return getLastMonday(new Date()).getTime() > timestamp
-}
+export default (timestamp) => getLastMonday(new Date()).getTime() > timestamp

@@ -9,9 +9,16 @@ import fs from 'fs'
 import path from 'path'
 import { migrate } from 'postgres-migrations'
 import graphql from './api/graphql.js'
-import billboard from './data/billboard.js'
-import db from './data/db.js'
-import repository from './data/repository.js'
+import favoriteAdapter from './adapter/favoriteAdapter.js'
+import songAdapter from './adapter/songAdapter.js'
+import userAdapter from './adapter/userAdapter.js'
+import billboardAdapter from './adapter/billboardAdapter.js'
+import signupUser from './usecase/signupUser.js'
+import loginUser from './usecase/loginUser.js'
+import favoriteSong from './usecase/favoriteSong.js'
+import unfavoriteSong from './usecase/unfavoriteSong.js'
+import getTop100Songs from './usecase/getTop100Songs.js'
+import getFavorites from './usecase/getFavorites.js'
 dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
 export default async function build(options = {}) {
@@ -46,17 +53,31 @@ export default async function build(options = {}) {
 		console.error(err)
 		if (options.forceMigration) {
 			console.log('Forcing migration...')
-			await fastify.pg.query(
-				fs.readFileSync('./sql/recreate_schema.psql').toString()
-			)
+			await fastify.pg.query(fs.readFileSync('./sql/recreate_schema.psql').toString())
 			await migrate({ client }, './sql/migrations')
 		}
 	} finally {
 		await client?.end()
 	}
 
+	const query = (path, args) =>
+		fastify.pg.query(fs.readFileSync('./sql/' + path + '.psql').toString(), args).then((res) => res.rows)
+
+	const songs = songAdapter(query)
+	const users = userAdapter(query)
+	const favorites = favoriteAdapter(query)
+	const billboard = billboardAdapter()
+
 	fastify.register(fastifyPlugin(graphql), {
-		repository: repository(db(fastify.pg), billboard),
+		songAdapter: songs,
+		services: {
+			signupUser: signupUser(users),
+			loginUser: loginUser(users),
+			favoriteSong: favoriteSong(favorites),
+			unfavoriteSong: unfavoriteSong(favorites),
+			getFavorites: getFavorites(favorites),
+			getTop100Songs: getTop100Songs(songs, billboard),
+		},
 	})
 
 	fastify.get('/healthz', async (request, reply) => {

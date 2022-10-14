@@ -1,0 +1,5 @@
+mutation Unfavorite($songId: Int!) {
+  unfavorite(songId: $songId) {
+    id
+  }
+}

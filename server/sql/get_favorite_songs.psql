@@ -1,4 +1,4 @@
-SELECT song_id AS id
+SELECT song_id
 FROM favorite
 JOIN song ON song.id = favorite.song_id
 WHERE favorite.user_id = $1

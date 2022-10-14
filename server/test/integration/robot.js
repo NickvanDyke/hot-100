@@ -1,5 +1,5 @@
 import { gql } from '../util.js'
-import { createMercuriusTestClient } from 'mercurius-integration-testing';
+import { createMercuriusTestClient } from 'mercurius-integration-testing'
 
 export class Robot {
 	constructor(fastify) {
@@ -17,15 +17,13 @@ export class Robot {
 			payload: JSON.stringify({
 				query: `
 					mutation {
-						signup(name: "${name}", password: "${password}") {
-							name
-						}
+						signup(name: "${name}", password: "${password}")
 					}
 				`,
 			}),
 		})
 
-		assert.equal(JSON.parse(res.body).data.signup.name, name)
+		assert.equal(JSON.parse(res.body).data.signup, name)
 		this.gql.setCookies({ session: res.cookies[0].value })
 	}
 
@@ -39,15 +37,13 @@ export class Robot {
 			payload: JSON.stringify({
 				query: `
 					mutation {
-						login(name: "${name}", password: "${password}") {
-							name
-						}
+						login(name: "${name}", password: "${password}")
 					}
 				`,
 			}),
 		})
 
-		assert.equal(JSON.parse(res.body).data.login.name, name)
+		assert.equal(JSON.parse(res.body).data.login, name)
 		this.gql.setCookies({ session: res.cookies[0].value })
 	}
 
@@ -60,20 +56,18 @@ export class Robot {
 					artist
 					cover
 					rank
-					isFavorite
 				}
 			}
 		`)
-		
+
 		return res.data.top100
 	}
 
-	async favorite(songId, isFavorite) {
+	async favorite(songId) {
 		const res = await this.gql.mutate(gql`
 			mutation {
-				favorite(songId: ${songId}, isFavorite: ${isFavorite}) {
+				favorite(songId: ${songId}) {
 					id
-					isFavorite
 				}
 			}
 		`)
@@ -84,27 +78,44 @@ export class Robot {
 			data: {
 				favorite: {
 					id: songId,
-					isFavorite: isFavorite,
 				},
 			},
 		})
 	}
-
-	async getFavorites() {
-		const res = await this.gql.query(gql`
-			query {
-				user {
-					favorites {
-						title
-						artist
-						cover
-						rank
-						isFavorite
-					}
+	
+	async unfavorite(songId) {
+		const res = await this.gql.mutate(gql`
+			mutation {
+				unfavorite(songId: ${songId}) {
+					id
 				}
 			}
 		`)
+
+		if (res.errors) throw new Error(res.errors[0].message)
+
+		assert.deepEqual(res, {
+			data: {
+				unfavorite: {
+					id: songId,
+				},
+			},
+		})
+	}
 		
-		return res.data.user.favorites
+
+	async getMyFavorites() {
+		const res = await this.gql.query(gql`
+			query {
+				myFavorites {
+					title
+					artist
+					cover
+					rank
+				}
+			}
+		`)
+
+		return res.data.myFavorites
 	}
 }

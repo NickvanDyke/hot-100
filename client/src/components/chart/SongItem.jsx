@@ -14,9 +14,11 @@ import { useState } from 'react'
 import { AuthDialog } from '../AuthDialog.jsx'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useFavorite } from '../../hooks/useFavorite.js'
+import { useUnfavorite } from '../../hooks/useUnfavorite.js'
 
-export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } }) => {
+export const SongItem = ({ song: { id, title, artist, cover, rank }, isFavorite }) => {
 	const favorite = useFavorite(id)
+	const unfavorite = useUnfavorite(id)
 	const [authing, setAuthing] = useState(false)
 	const auth = useAuth()
 	const [imgLoaded, setImgLoaded] = useState(false)
@@ -24,8 +26,10 @@ export const SongItem = ({ song: { id, title, artist, cover, rank, isFavorite } 
 	const onFavorite = () => {
 		if (!auth.name) {
 			setAuthing(true)
+		} else if (isFavorite) {
+			unfavorite()
 		} else {
-			favorite(!isFavorite)
+			favorite()
 		}
 	}
 

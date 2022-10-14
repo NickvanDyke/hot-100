@@ -4,5 +4,4 @@ fragment SongFields on Song {
 	artist
 	cover
 	rank
-	isFavorite
 }

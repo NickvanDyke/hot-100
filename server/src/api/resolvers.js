@@ -1,50 +1,37 @@
-import mercurius from 'mercurius'
-const { ErrorWithProps } = mercurius
-
-export default {
+export default ({ getFavorites, getTop100Songs, signupUser, loginUser, favoriteSong, unfavoriteSong }) => ({
 	Query: {
-		user: async (root, { id }, { user }) => {
-			if (!id && !user) throw new ErrorWithProps('Not logged in', {}, 401)
-			return {
-				id: id || user.id,
-			}
+		top100: async (root, args, context) => {
+			const top100Ids = await getTop100Songs()
+			return top100Ids.map((id) => ({ id }))
 		},
-		top100: async (root, args, { repository }) => {
-			const songIds = await repository.getTop100SongIds()
-			return songIds.map((id) => ({ id }))
+		myFavorites: async (root, args, { user }) => {
+			const myFavoriteIds = await getFavorites(user?.id)
+			return myFavoriteIds.map((id) => ({ id }))
 		},
 	},
 	Mutation: {
-		signup: async (root, { name, password }, { repository, reply }) => {
-			const user = await repository.createUser(name, password)
+		signup: async (root, { name, password }, { reply }) => {
+			const newUserId = await signupUser(name, password)
 			reply.code(201)
-			reply.request.session.set('id', user.id)
-			return { id: user.id }
+			reply.request.session.set('id', newUserId)
+			return name
 		},
-		login: async (root, { name, password }, { repository, reply }) => {
-			const user = await repository.getUserByName(name)
-			if (!user || user.password !== password) {
-				throw new ErrorWithProps('Invalid credentials')
-			} else {
-				reply.request.session.set('id', user.id)
-				return { id: user.id }
-			}
+		login: async (root, { name, password }, { reply }) => {
+			const userId = await loginUser(name, password)
+			reply.request.session.set('id', userId)
+			return name
 		},
 		logout: async (root, args, { reply }) => {
 			reply.request.session.delete()
 			return true
 		},
-		favorite: async (root, { songId, isFavorite }, { user, repository }) => {
-			if (!user) throw new ErrorWithProps('Not logged in')
-			await repository.favoriteSong(user.id, songId, isFavorite)
+		favorite: async (root, { songId }, { user }) => {
+			await favoriteSong(user?.id, songId)
+			return { id: songId }
+		},
+		unfavorite: async (root, { songId }, { user }) => {
+			await unfavoriteSong(user?.id, songId)
 			return { id: songId }
 		},
 	},
-	User: {
-		name: async ({ id }, args, { repository }) => {
-			const user = await repository.getUserById(id)
-			return user.name
-		},
-		favorites: async ({ id }, args, { repository }) => repository.getFavoriteSongs(id),
-	},
-}
+})
