@@ -10,7 +10,7 @@ export default (query) => ({
 	getArtists: (songIds) => query('get_song_artists', [songIds]).then((rows) => rows.map((row) => row.artist)),
 	getCovers: (songIds) => query('get_song_covers', [songIds]).then((rows) => rows.map((row) => row.cover)),
 	getRanks: (songIds) => query('get_song_ranks', [songIds]).then((rows) => rows.map((row) => row.rank)),
-	getTags: async (songIds) => query('get_song_tags', [songIds]).then((rows) => rows.map((row) => row.tag)),
+	getTags: (songIds) => query('get_song_tags', [songIds]).then((rows) => rows.map((row) => row.tag)),
 
 	resetRanks: () => query('reset_song_ranks'),
 

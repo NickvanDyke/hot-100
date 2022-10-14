@@ -25,12 +25,11 @@ class FakeBillboardAdapter {
 	]
 	numCalls = 0
 	
-	async getLatestTop100() {
+	getLatestTop100() {
 		this.numCalls++
 		return this.songs
 	}
 }
-
 
 class FakeSongAdapter {
 	songs = []
